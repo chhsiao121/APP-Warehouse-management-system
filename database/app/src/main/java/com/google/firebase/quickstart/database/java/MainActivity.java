@@ -54,7 +54,7 @@ public class  MainActivity extends AppCompatActivity {
                     fab.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            navController.navigate(R.id.action_MainFragment_to_NewItemFragment);
+                            navController.navigate(R.id.action_MainFragment_to_NewPostFragment);
                         }
                     });
                 } else {

@@ -3,7 +3,7 @@ package com.google.firebase.quickstart.database.java.listfragments;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
-public class RecentPostsFragment extends ItemListFragment {
+public class RecentPostsFragment extends PostListFragment {
 
     public RecentPostsFragment() {}
 

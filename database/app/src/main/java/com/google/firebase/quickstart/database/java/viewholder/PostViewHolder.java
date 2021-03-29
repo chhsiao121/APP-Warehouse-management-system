@@ -1,9 +1,10 @@
 package com.google.firebase.quickstart.database.java.viewholder;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.quickstart.database.R;
 import com.google.firebase.quickstart.database.java.models.Post;
@@ -19,18 +20,18 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     public PostViewHolder(View itemView) {
         super(itemView);
 
-        titleView = itemView.findViewById(R.id.postTitle);
+        titleView = itemView.findViewById(R.id.postName);
         authorView = itemView.findViewById(R.id.postAuthor);
         starView = itemView.findViewById(R.id.star);
         numStarsView = itemView.findViewById(R.id.postNumStars);
-        bodyView = itemView.findViewById(R.id.postBody);
+        bodyView = itemView.findViewById(R.id.postNumber);
     }
 
     public void bindToPost(Post post, View.OnClickListener starClickListener) {
-        titleView.setText(post.title);
+        titleView.setText(post.snumber);
         authorView.setText(post.author);
         numStarsView.setText(String.valueOf(post.starCount));
-        bodyView.setText(post.body);
+        bodyView.setText(post.count);
 
         starView.setOnClickListener(starClickListener);
     }

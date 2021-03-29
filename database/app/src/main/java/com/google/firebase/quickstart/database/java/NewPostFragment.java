@@ -1,17 +1,23 @@
 package com.google.firebase.quickstart.database.java;
 
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,17 +27,27 @@ import com.google.firebase.quickstart.database.R;
 import com.google.firebase.quickstart.database.databinding.FragmentNewPostBinding;
 import com.google.firebase.quickstart.database.java.models.Post;
 import com.google.firebase.quickstart.database.java.models.User;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.app.Activity.RESULT_OK;
+
 public class NewPostFragment extends BaseFragment {
     private static final String TAG = "NewPostFragment";
     private static final String REQUIRED = "Required";
+    private static final int PICK_IMAGE_REQUEST = 1;
 
     private DatabaseReference mDatabase;
+    private StorageReference mStorageRef;
 
     private FragmentNewPostBinding binding;
+    private StorageTask mUploadTask;
+    private Uri mImageUri;
 
     @Nullable
     @Override
@@ -44,7 +60,14 @@ public class NewPostFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mStorageRef = FirebaseStorage.getInstance().getReference();
 
+        binding.fabAddImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFileChooser();
+            }
+        });
         binding.fabSubmitPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,22 +76,117 @@ public class NewPostFragment extends BaseFragment {
         });
     }
 
+    private void openFileChooser(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+
+    }
+
+    private String getFileExtension(Uri uri) {
+        ContentResolver cR = getActivity().getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
+    }
+    private String uploadFile() {
+        final String fileName;
+        if (mImageUri != null) {
+            fileName = System.currentTimeMillis() + "." + getFileExtension(mImageUri);
+            StorageReference fileReference = mStorageRef.child(fileName);
+            mUploadTask = fileReference.putFile(mImageUri);
+
+            // Register observers to listen for when the download is done or if it fails
+            mUploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getContext(), "image upload failure", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.e(TAG, "image upload success: ");
+                }
+            });
+        } else {
+            Toast.makeText(getContext(), "No file selected", Toast.LENGTH_SHORT).show();
+            fileName = null;
+        }
+        return fileName;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null) {
+            mImageUri = data.getData();
+            binding.imageView.setImageURI(mImageUri);
+        }
+    }
+
     private void submitPost() {
-        final String title = binding.fieldTitle.getText().toString();
-        final String body = binding.fieldBody.getText().toString();
+        final String location = binding.fieldLocation.getText().toString();
+        final String number = binding.fieldNumber.getText().toString();
+        final String count = binding.fieldCount.getText().toString();
+        final String format = binding.fieldFormat.getText().toString();
+        final String remarks = binding.fieldRemarks.getText().toString();
+        final String snumber = binding.fieldSNumber.getText().toString();
+        final String unit = binding.fieldUnit.getText().toString();
+        final String name = binding.fieldName.getText().toString();
+
 
         // Title is required
-        if (TextUtils.isEmpty(title)) {
-            binding.fieldTitle.setError(REQUIRED);
+        if (TextUtils.isEmpty(location)) {
+            binding.fieldLocation.setError(REQUIRED);
             return;
         }
 
-        // Body is required
-        if (TextUtils.isEmpty(body)) {
-            binding.fieldBody.setError(REQUIRED);
+        // Title is required
+        if (TextUtils.isEmpty(snumber)) {
+            binding.fieldSNumber.setError(REQUIRED);
             return;
         }
 
+        // Title is required
+        if (TextUtils.isEmpty(name)) {
+            binding.fieldName.setError(REQUIRED);
+            return;
+        }
+
+        // Title is required
+        if (TextUtils.isEmpty(format)) {
+            binding.fieldFormat.setError(REQUIRED);
+            return;
+        }
+
+        // Title is required
+        if (TextUtils.isEmpty(unit)) {
+            binding.fieldUnit.setError(REQUIRED);
+            return;
+        }
+
+        // Title is required
+        if (TextUtils.isEmpty(number)) {
+            binding.fieldNumber.setError(REQUIRED);
+            return;
+        }
+        // Title is required
+        if (TextUtils.isEmpty(count)) {
+            binding.fieldCount.setError(REQUIRED);
+            return;
+        }
+
+        String FileName = "null";
+        if (mUploadTask != null && mUploadTask.isInProgress()) {
+            Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
+        } else {
+            FileName = uploadFile();
+
+        }
+
+        final String uploadFileName = FileName;
         // Disable button so there are no multi-posts
         setEditingEnabled(false);
         Toast.makeText(getContext(), "Posting...", Toast.LENGTH_SHORT).show();
@@ -89,7 +207,7 @@ public class NewPostFragment extends BaseFragment {
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             // Write new post
-                            writeNewPost(userId, user.username, title, body);
+                            writeNewPost(userId, user.username, location, number, count, format, remarks, snumber, unit, name, uploadFileName);
                         }
 
                         setEditingEnabled(true);
@@ -106,8 +224,14 @@ public class NewPostFragment extends BaseFragment {
     }
 
     private void setEditingEnabled(boolean enabled) {
-        binding.fieldTitle.setEnabled(enabled);
-        binding.fieldBody.setEnabled(enabled);
+        binding.fieldLocation.setEnabled(enabled);
+        binding.fieldSNumber.setEnabled(enabled);
+        binding.fieldName.setEnabled(enabled);
+        binding.fieldFormat.setEnabled(enabled);
+        binding.fieldUnit.setEnabled(enabled);
+        binding.fieldNumber.setEnabled(enabled);
+        binding.fieldCount.setEnabled(enabled);
+        binding.fieldRemarks.setEnabled(enabled);
         if (enabled) {
             binding.fabSubmitPost.show();
         } else {
@@ -115,11 +239,12 @@ public class NewPostFragment extends BaseFragment {
         }
     }
 
-    private void writeNewPost(String userId, String username, String title, String body) {
+    private void writeNewPost(String userId, String username, String location, String number, String count, String format,
+                              String remarks, String snumber, String unit, String name, String uploadFileName) {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
         String key = mDatabase.child("posts").push().getKey();
-        Post post = new Post(userId, username, title, body);
+        Post post = new Post(userId, username, location, snumber,name,format,unit,number,count,remarks, uploadFileName);
         Map<String, Object> postValues = post.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();

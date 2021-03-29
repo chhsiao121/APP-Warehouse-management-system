@@ -1,6 +1,7 @@
 package com.google.firebase.quickstart.database.java;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,9 +11,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,11 +27,16 @@ import com.google.firebase.quickstart.database.java.models.Comment;
 import com.google.firebase.quickstart.database.java.models.Post;
 import com.google.firebase.quickstart.database.java.models.User;
 import com.google.firebase.quickstart.database.java.viewholder.CommentViewHolder;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PostDetailFragment extends BaseFragment {
+
+
 
     private static final String TAG = "PostDetailFragment";
 
@@ -40,6 +47,8 @@ public class PostDetailFragment extends BaseFragment {
     private ValueEventListener mPostListener;
     private String mPostKey;
     private CommentAdapter mAdapter;
+
+    private StorageReference storageReference;
 
     private FragmentPostDetailBinding binding;
 
@@ -65,19 +74,23 @@ public class PostDetailFragment extends BaseFragment {
                 .child("posts").child(mPostKey);
         mCommentsReference = FirebaseDatabase.getInstance().getReference()
                 .child("post-comments").child(mPostKey);
+//        var storageRef = storage.ref();
+//        storageReference = storage.getReference();
 
-        binding.buttonPostComment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                postComment();
-            }
-        });
-        binding.recyclerPostComments.setLayoutManager(new LinearLayoutManager(getContext()));
+//        binding.buttonPostComment.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                postComment();
+//            }
+//        });
+//        binding.recyclerPostComments.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     @Override
     public void onStart() {
         super.onStart();
+
+
 
         // Add value event listener to the post
         ValueEventListener postListener = new ValueEventListener() {
@@ -86,8 +99,43 @@ public class PostDetailFragment extends BaseFragment {
                 // Get Post object and use the values to update the UI
                 Post post = dataSnapshot.getValue(Post.class);
                 binding.postAuthorLayout.postAuthor.setText(post.author);
-                binding.postTextLayout.postTitle.setText(post.title);
-                binding.postTextLayout.postBody.setText(post.body);
+                binding.postTextLayout.postLocation.setText(post.location);
+                binding.postTextLayout.postSNumber.setText(post.snumber);
+                binding.postTextLayout.postName.setText(post.name);
+                binding.postTextLayout.postFormat.setText(post.format);
+                binding.postTextLayout.postUnit.setText(post.unit);
+                binding.postTextLayout.postNumber.setText(post.number);
+                binding.postTextLayout.postCount.setText(post.count);
+                binding.postTextLayout.postRemarks.setText(post.remarks);
+
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference storageRef = storage.getReference();
+                storageRef.child(post.uploadFileName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        // Got the download URL for 'users/me/profile.png'
+                        Picasso.get().load(uri).into(binding.imageView2);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+
+//                storageReference.child(post.uploadFileName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                    @Override
+//                    public void onSuccess(Uri uri) {
+//                        binding.imageView2.setImageURI(uri);
+//                    }
+//                }).addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception exception) {
+//                        Toast.makeText(getContext(), "Failed to load image from FB.",
+//                                Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+
             }
 
             @Override
@@ -103,10 +151,16 @@ public class PostDetailFragment extends BaseFragment {
         // Keep copy of post listener so we can remove it when app stops
         mPostListener = postListener;
 
+
+
+
         // Listen for comments
         mAdapter = new CommentAdapter(getContext(), mCommentsReference);
-        binding.recyclerPostComments.setAdapter(mAdapter);
+//        binding.recyclerPostComments.setAdapter(mAdapter);
+
+
     }
+
 
     @Override
     public void onStop() {
@@ -132,14 +186,14 @@ public class PostDetailFragment extends BaseFragment {
                         String authorName = user.username;
 
                         // Create new comment object
-                        String commentText = binding.fieldCommentText.getText().toString();
-                        Comment comment = new Comment(uid, authorName, commentText);
+//                        String commentText = binding.fieldCommentText.getText().toString();
+//                        Comment comment = new Comment(uid, authorName, commentText);
 
                         // Push the comment, it will appear in the list
-                        mCommentsReference.push().setValue(comment);
+//                        mCommentsReference.push().setValue(comment);
 
                         // Clear the field
-                        binding.fieldCommentText.setText(null);
+//                        binding.fieldCommentText.setText(null);
                     }
 
                     @Override
