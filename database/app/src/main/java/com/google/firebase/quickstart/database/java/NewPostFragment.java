@@ -53,6 +53,8 @@ public class NewPostFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentNewPostBinding.inflate(inflater, container, false);
+        binding.fabSubmitPost.show();
+        binding.fabback.show();
         return binding.getRoot();
     }
 
@@ -71,7 +73,16 @@ public class NewPostFragment extends BaseFragment {
         binding.fabSubmitPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                binding.fabSubmitPost.hide();
                 submitPost();
+            }
+        });
+        binding.fabback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.fabback.hide();
+                NavHostFragment.findNavController(NewPostFragment.this)
+                        .navigate(R.id.action_NewPostFragment_to_MainFragment);
             }
         });
     }
