@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -84,6 +85,13 @@ public class PostDetailFragment extends BaseFragment {
 //            }
 //        });
 //        binding.recyclerPostComments.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.backbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavHostFragment.findNavController(PostDetailFragment.this)
+                        .navigate(R.id.action_PostDetailFragment_to_MainFragment);
+            }
+        });
     }
 
     @Override
@@ -107,10 +115,13 @@ public class PostDetailFragment extends BaseFragment {
                 binding.postTextLayout.postNumber.setText(post.number);
                 binding.postTextLayout.postCount.setText(post.count);
                 binding.postTextLayout.postRemarks.setText(post.remarks);
-
+                String uploadFileName = new String("default name");
+                if(post.uploadFileName != null){
+                    uploadFileName =  post.uploadFileName;
+                }
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 StorageReference storageRef = storage.getReference();
-                storageRef.child(post.uploadFileName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                storageRef.child(uploadFileName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
                         // Got the download URL for 'users/me/profile.png'
@@ -120,6 +131,8 @@ public class PostDetailFragment extends BaseFragment {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         // Handle any errors
+                        binding.imageView2.setImageResource(R.drawable.images);
+                        Toast.makeText(getContext(), "Failed to load image from Firebase.", Toast.LENGTH_SHORT).show();
                     }
                 });
 

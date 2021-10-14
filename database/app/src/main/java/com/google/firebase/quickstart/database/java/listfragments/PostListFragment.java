@@ -123,6 +123,7 @@ public abstract class PostListFragment extends Fragment {
             }
         };
         mRecycler.setAdapter(mAdapter);
+        Log.d(TAG, "test_mRecyyler");
     }
 
     // [START post_stars_transaction]
