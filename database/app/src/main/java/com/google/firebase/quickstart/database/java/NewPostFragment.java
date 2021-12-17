@@ -1,6 +1,8 @@
 package com.google.firebase.quickstart.database.java;
 
+import android.app.AlertDialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
@@ -25,12 +28,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.quickstart.database.R;
 import com.google.firebase.quickstart.database.databinding.FragmentNewPostBinding;
+import com.google.firebase.quickstart.database.java.capture.CaptureAct;
 import com.google.firebase.quickstart.database.java.models.Post;
 import com.google.firebase.quickstart.database.java.models.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +56,7 @@ public class NewPostFragment extends BaseFragment {
     private FragmentNewPostBinding binding;
     private StorageTask mUploadTask;
     private Uri mImageUri;
-
+    ScanOptions options = new ScanOptions();
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -63,7 +71,19 @@ public class NewPostFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
-
+        options.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES);
+        options.setCaptureActivity(CaptureAct.class);
+//        options.setPrompt("Scan a barcode");
+        options.setCameraId(0);  // Use a specific camera of the device
+        options.setOrientationLocked(false);
+        options.setBeepEnabled(false);
+        options.setBarcodeImageEnabled(false);
+        binding.fabBarcodeScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                barcodeLauncher.launch(options);
+            }
+        });
         binding.fabAddImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,7 +93,7 @@ public class NewPostFragment extends BaseFragment {
         binding.fabSubmitPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                binding.fabSubmitPost.hide();
+//                binding.fabSubmitPost.hide();
                 submitPost();
             }
         });
@@ -129,7 +149,6 @@ public class NewPostFragment extends BaseFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
                 && data != null && data.getData() != null) {
             mImageUri = data.getData();
@@ -146,6 +165,7 @@ public class NewPostFragment extends BaseFragment {
         final String snumber = binding.fieldSNumber.getText().toString();
         final String unit = binding.fieldUnit.getText().toString();
         final String name = binding.fieldName.getText().toString();
+        final String barcode = binding.fieldBarcode.getText().toString();
 
 
         // Title is required
@@ -218,7 +238,7 @@ public class NewPostFragment extends BaseFragment {
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             // Write new post
-                            writeNewPost(userId, user.username, location, number, count, format, remarks, snumber, unit, name, uploadFileName);
+                            writeNewPost(userId, user.username, location, number, count, format, remarks, barcode, snumber, unit, name, uploadFileName);
                         }
 
                         setEditingEnabled(true);
@@ -243,6 +263,7 @@ public class NewPostFragment extends BaseFragment {
         binding.fieldNumber.setEnabled(enabled);
         binding.fieldCount.setEnabled(enabled);
         binding.fieldRemarks.setEnabled(enabled);
+        binding.fieldBarcode.setEnabled(enabled);
         if (enabled) {
             binding.fabSubmitPost.show();
         } else {
@@ -251,11 +272,11 @@ public class NewPostFragment extends BaseFragment {
     }
 
     private void writeNewPost(String userId, String username, String location, String number, String count, String format,
-                              String remarks, String snumber, String unit, String name, String uploadFileName) {
+                              String remarks, String barcode, String snumber, String unit, String name, String uploadFileName) {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
         String key = mDatabase.child("posts").push().getKey();
-        Post post = new Post(userId, username, location, snumber,name,format,unit,number,count,remarks, uploadFileName);
+        Post post = new Post(userId, username, location, snumber,name,format,unit,number,count,remarks, barcode, uploadFileName);
         Map<String, Object> postValues = post.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
@@ -264,4 +285,33 @@ public class NewPostFragment extends BaseFragment {
 
         mDatabase.updateChildren(childUpdates);
     }
+    private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
+            result -> {
+                if(result.getContents()!=null){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setMessage(result.getContents());
+                    builder.setTitle("Scanning Result");
+                    builder.setPositiveButton("Scan Again", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            barcodeLauncher.launch(options);
+                        }
+                    }).setNegativeButton("finish", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            binding.fieldBarcode.setText(result.getContents());
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+                else {
+                    Toast.makeText(getActivity(),"No Results",Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
+
+
+
 }

@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.google.firebase.quickstart.database"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 30
         versionCode getVersionCodeTimeStamps()
         versionName "1.0"
@@ -74,6 +74,8 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'androidx.multidex:multidex:2.0.1'
 //    implementation 'com.github.dmallcott:DismissibleImageView:1.0.1'
+    //barcode and qrcode
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
 }
 
 

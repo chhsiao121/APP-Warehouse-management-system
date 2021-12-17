@@ -5,9 +5,9 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/database.iml" filepath="$PROJECT_DIR$/.idea/modules/database.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/database.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/database.app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/internal/database.internal.iml" filepath="$PROJECT_DIR$/.idea/modules/internal/database.internal.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/257538589/database.internal.chooserx.iml" filepath="$PROJECT_DIR$/.idea/modules/257538589/database.internal.chooserx.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/2093993859/database.internal.lint.iml" filepath="$PROJECT_DIR$/.idea/modules/2093993859/database.internal.lint.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/1344380334/database.internal.lintchecks.iml" filepath="$PROJECT_DIR$/.idea/modules/1344380334/database.internal.lintchecks.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-931986315/database.internal.chooserx.iml" filepath="$PROJECT_DIR$/.idea/modules/-931986315/database.internal.chooserx.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1105459749/database.internal.lint.iml" filepath="$PROJECT_DIR$/.idea/modules/-1105459749/database.internal.lint.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/672248326/database.internal.lintchecks.iml" filepath="$PROJECT_DIR$/.idea/modules/672248326/database.internal.lintchecks.iml" />
     </modules>
   </component>
 </project>

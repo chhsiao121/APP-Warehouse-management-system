@@ -19,6 +19,7 @@ public class Post {
     public String number;
     public String count;
     public String remarks;
+    public String barcode;
     public String uploadFileName;
     public int starCount = 0;
     public Map<String, Boolean> stars = new HashMap<>();
@@ -28,7 +29,7 @@ public class Post {
     }
 
     public Post(String uid, String author,String location, String snumber,String name,
-                String format,String unit,String number,String count,String remarks, String uploadFileName) {
+                String format,String unit,String number,String count,String remarks, String barcode, String uploadFileName) {
         this.uid = uid;
         this.author = author;
         this.location = location;
@@ -39,6 +40,7 @@ public class Post {
         this.number = number;
         this.count = count;
         this.remarks = remarks;
+        this.barcode = barcode;
         this.uploadFileName = uploadFileName;
     }
 
@@ -55,6 +57,7 @@ public class Post {
         result.put("number", number);
         result.put("count", count);
         result.put("remarks", remarks);
+        result.put("barcode", barcode);
         result.put("uploadFileName", uploadFileName);
         result.put("starCount", starCount);
         result.put("stars", stars);
