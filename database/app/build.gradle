@@ -8,7 +8,7 @@ android {
     compileSdkVersion 30
 
     defaultConfig {
-        applicationId "com.google.firebase.quickstart.database"
+        applicationId "com.chhsiao.firebase.quickstart.database"
         minSdkVersion 19
         targetSdkVersion 30
         versionCode getVersionCodeTimeStamps()

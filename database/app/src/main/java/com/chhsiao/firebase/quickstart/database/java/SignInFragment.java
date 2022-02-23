@@ -1,6 +1,5 @@
-package com.google.firebase.quickstart.database.java;
+package com.chhsiao.firebase.quickstart.database.java;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -11,9 +10,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.chhsiao.firebase.quickstart.database.java.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -23,7 +22,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.quickstart.database.R;
 import com.google.firebase.quickstart.database.databinding.FragmentSignInBinding;
-import com.google.firebase.quickstart.database.java.models.User;
 
 public class SignInFragment extends BaseFragment implements View.OnClickListener {
 

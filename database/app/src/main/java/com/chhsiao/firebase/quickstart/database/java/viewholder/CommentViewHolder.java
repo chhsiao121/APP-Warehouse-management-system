@@ -1,4 +1,4 @@
-package com.google.firebase.quickstart.database.java.viewholder;
+package com.chhsiao.firebase.quickstart.database.java.viewholder;
 
 import android.view.View;
 import android.widget.TextView;

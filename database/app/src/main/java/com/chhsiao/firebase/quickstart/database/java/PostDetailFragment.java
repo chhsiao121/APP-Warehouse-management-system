@@ -1,4 +1,4 @@
-package com.google.firebase.quickstart.database.java;
+package com.chhsiao.firebase.quickstart.database.java;
 
 import android.content.Context;
 import android.net.Uri;
@@ -14,6 +14,10 @@ import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chhsiao.firebase.quickstart.database.java.models.Comment;
+import com.chhsiao.firebase.quickstart.database.java.models.Post;
+import com.chhsiao.firebase.quickstart.database.java.models.User;
+import com.chhsiao.firebase.quickstart.database.java.viewholder.CommentViewHolder;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
@@ -24,10 +28,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.quickstart.database.R;
 import com.google.firebase.quickstart.database.databinding.FragmentPostDetailBinding;
-import com.google.firebase.quickstart.database.java.models.Comment;
-import com.google.firebase.quickstart.database.java.models.Post;
-import com.google.firebase.quickstart.database.java.models.User;
-import com.google.firebase.quickstart.database.java.viewholder.CommentViewHolder;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;

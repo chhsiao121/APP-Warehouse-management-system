@@ -1,4 +1,4 @@
-package com.google.firebase.quickstart.database.java.viewholder;
+package com.chhsiao.firebase.quickstart.database.java.viewholder;
 
 import android.view.View;
 import android.widget.ImageView;
@@ -7,7 +7,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.quickstart.database.R;
-import com.google.firebase.quickstart.database.java.models.Post;
+import com.chhsiao.firebase.quickstart.database.java.models.Post;
 
 public class PostViewHolder extends RecyclerView.ViewHolder {
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.firebase.quickstart.database.java;
+package com.chhsiao.firebase.quickstart.database.java;
 
 import android.os.Bundle;
 import android.view.View;

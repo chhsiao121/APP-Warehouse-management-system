@@ -1,6 +1,7 @@
-package com.google.firebase.quickstart.database
+package com.chhsiao.firebase.quickstart.database
 
 import android.content.Intent
+import com.chhsiao.firebase.quickstart.database.java.MainActivity
 import com.firebase.example.internal.BaseEntryChoiceActivity
 import com.firebase.example.internal.Choice
 
@@ -11,7 +12,7 @@ class EntryChoiceActivity : BaseEntryChoiceActivity() {
                 Choice(
                         "Java",
                         "Run the Firebase Realtime Database quickstart written in Java.",
-                        Intent(this, com.google.firebase.quickstart.database.java.MainActivity::class.java))
+                        Intent(this, MainActivity::class.java))
 //                Choice(
 //                        "Kotlin",
 //                        "Run the Firebase Realtime Database quickstart written in Kotlin.",

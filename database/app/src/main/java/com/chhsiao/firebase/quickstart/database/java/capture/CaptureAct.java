@@ -1,4 +1,4 @@
-package com.google.firebase.quickstart.database.java.capture;
+package com.chhsiao.firebase.quickstart.database.java.capture;
 import com.journeyapps.barcodescanner.CaptureActivity;
 public class CaptureAct extends CaptureActivity{
 }

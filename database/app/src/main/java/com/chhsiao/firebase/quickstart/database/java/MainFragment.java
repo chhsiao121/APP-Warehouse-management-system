@@ -1,4 +1,4 @@
-package com.google.firebase.quickstart.database.java;
+package com.chhsiao.firebase.quickstart.database.java;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
@@ -19,9 +18,9 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.quickstart.database.R;
 import com.google.firebase.quickstart.database.databinding.FragmentMainBinding;
-import com.google.firebase.quickstart.database.java.listfragments.MyPostsFragment;
-import com.google.firebase.quickstart.database.java.listfragments.MyTopPostsFragment;
-import com.google.firebase.quickstart.database.java.listfragments.RecentPostsFragment;
+import com.chhsiao.firebase.quickstart.database.java.listfragments.MyPostsFragment;
+import com.chhsiao.firebase.quickstart.database.java.listfragments.MyTopPostsFragment;
+import com.chhsiao.firebase.quickstart.database.java.listfragments.RecentPostsFragment;
 
 public class MainFragment extends Fragment {
 

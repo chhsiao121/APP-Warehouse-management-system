@@ -1,4 +1,4 @@
-package com.google.firebase.quickstart.database.java;
+package com.chhsiao.firebase.quickstart.database.java;
 
 import android.app.AlertDialog;
 import android.content.ContentResolver;
@@ -19,6 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.chhsiao.firebase.quickstart.database.java.models.Post;
+import com.chhsiao.firebase.quickstart.database.java.models.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -28,15 +30,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.quickstart.database.R;
 import com.google.firebase.quickstart.database.databinding.FragmentNewPostBinding;
-import com.google.firebase.quickstart.database.java.capture.CaptureAct;
-import com.google.firebase.quickstart.database.java.models.Post;
-import com.google.firebase.quickstart.database.java.models.User;
+import com.chhsiao.firebase.quickstart.database.java.capture.CaptureAct;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
