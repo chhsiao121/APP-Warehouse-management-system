@@ -1,5 +1,4 @@
-倉儲盤點APP
-=============================
+# 倉儲盤點 APP
 
 <p float="left">
   <img src="../../blob/main/5.jpg?raw=true" width="250" />
@@ -9,10 +8,7 @@
   <img src="../../blob/main/1.jpg?raw=true" width="250" />
 </p>
 
-
-
-簡介
-------------
+## 簡介
 
 - 使用者註冊、登入系統
 - 查看、新增盤點資料
@@ -20,16 +16,16 @@
 - 資料可附加手機內照片
 - 資料庫內容會於手機連線時自動同步至遠端資料庫
 
-使用套件
-------------
+## 使用套件
 
 - [Firebase Database](https://firebase.google.com/docs/database)
 
-資料庫架構
-------------
-- 圖片已JPEG格式儲存於firebase storeage，檔名格式為`時間湊雜碼.jpg`,如`1628241139810.jpg`
-- 倉儲資料已JSON格式儲存於firebase realtime database，JSON root 目錄中分為`post`及`user`子項
- - `user`用於儲存使用者資料，格式如下
+## 資料庫架構
+
+- 圖片已 JPEG 格式儲存於 firebase storeage，檔名格式為`時間湊雜碼.jpg`,如`1628241139810.jpg`
+- 倉儲資料已 JSON 格式儲存於 firebase realtime database，JSON root 目錄中分為`post`及`user`子項
+- `user`用於儲存使用者資料，格式如下
+
 ```
 {
     "使用者唯一id(英數混合30碼)" : {
@@ -43,7 +39,9 @@
     }
 }
 ```
- - `post`用於儲存倉儲資料，格式如下
+
+- `post`用於儲存倉儲資料，格式如下
+
 ```
     "倉儲資料識別碼" : {
       "author" : "編輯者id",
@@ -76,13 +74,15 @@
     },
 ```
 
-展示影片
-------------
-[Youtube連結](https://youtu.be/LMsfWJopg8k)
+## 展示影片
 
-預計增加功能
-------------
- - [ ] 制定目錄樹分類（倉庫、區、排、位置）
- - [ ] 可自訂項目欄位模板（目前是預設）
- - [ ] 可附加多張照片
- - [ ] beta版上架play商店
+[Youtube 連結](https://youtu.be/LMsfWJopg8k)
+
+## 預計增加功能
+
+- [ ] 制定目錄樹分類（倉庫、區、排、位置）
+- [ ] 可自訂項目欄位模板（目前是預設）
+- [ ] 可附加多張照片
+- [ ] beta 版上架 play 商店
+
+昱愷我大哥
