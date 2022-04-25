@@ -31,7 +31,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         titleView.setText(post.name);
         authorView.setText(post.author);
         numStarsView.setText(String.valueOf(post.starCount));
-        bodyView.setText(post.count);
+        bodyView.setText(post.number);
 
         starView.setOnClickListener(starClickListener);
     }

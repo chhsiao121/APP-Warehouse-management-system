@@ -1,24 +1,20 @@
 package com.chhsiao.firebase.quickstart.database.java;
-
-import android.app.AlertDialog;
-import android.content.ContentResolver;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
-import android.widget.Toast;
+import static android.app.Activity.RESULT_OK;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.app.AlertDialog;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+
+import com.chhsiao.firebase.quickstart.database.java.capture.CaptureAct;
 import com.chhsiao.firebase.quickstart.database.java.models.Post;
 import com.chhsiao.firebase.quickstart.database.java.models.User;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -28,48 +24,97 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.quickstart.database.databinding.FragmentUpdatePostBinding;
+import androidx.fragment.app.Fragment;
+
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
+import android.widget.Toast;
+
 import com.google.firebase.quickstart.database.R;
-import com.google.firebase.quickstart.database.databinding.FragmentNewPostBinding;
-import com.chhsiao.firebase.quickstart.database.java.capture.CaptureAct;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static android.app.Activity.RESULT_OK;
 
-public class NewPostFragment extends BaseFragment {
-    private static final String TAG = "NewPostFragment";
-    private static final String REQUIRED = "Required";
-    private static final int PICK_IMAGE_REQUEST = 1;
-
+public class UpdatePostFragment extends BaseFragment {
+    private FragmentUpdatePostBinding binding;
+    private StorageTask mUploadTask;
     private DatabaseReference mDatabase;
     private StorageReference mStorageRef;
-
-    private FragmentNewPostBinding binding;
-    private StorageTask mUploadTask;
     private Uri mImageUri;
+    private Context context;
+    private String mPostKey;
+    private String location,name,number,remarks,barcode,uploadFileName,loadFileName;
+    private final String userId = getUid();
+    public static final String EXTRA_POST_KEY = "post_key";
+    private static final String TAG = "UpdatePostFragment";
+    private static final String REQUIRED = "Required";
+    private static final int PICK_IMAGE_REQUEST = 1;
     ScanOptions options = new ScanOptions();
-    @Nullable
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentNewPostBinding.inflate(inflater, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        binding = FragmentUpdatePostBinding.inflate(inflater, container, false);
+        // Get post key from arguments
+        mPostKey = requireArguments().getString(EXTRA_POST_KEY);
+        if (mPostKey == null) {
+            throw new IllegalArgumentException("Must pass EXTRA_POST_KEY");
+        }
+        context = getContext();
+        location = requireArguments().getString("location");
+        name = requireArguments().getString("name");
+        number = requireArguments().getString("number");
+        remarks = requireArguments().getString("remarks");
+        barcode = requireArguments().getString("barcode");
+        loadFileName = requireArguments().getString("uploadFileName"); //資料庫中影像名稱
+        uploadFileName = loadFileName;
+
         binding.fabSubmitPost.show();
         binding.fabback.show();
+        binding.fieldLocation.setText(location);
+        binding.fieldName.setText(name);
+        binding.fieldNumber.setText(number);
+        binding.fieldRemarks.setText(remarks);
+        binding.fieldBarcode.setText(barcode);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+        if (loadFileName!=null) {
+            mStorageRef.child(loadFileName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    // Got the download URL for 'users/me/profile.png'
+                    Picasso.get().load(uri).into(binding.imageView);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                    binding.imageView.setImageResource(R.drawable.images);
+                    Toast.makeText(context, "Failed to load image from Firebase.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
         return binding.getRoot();
-
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mStorageRef = FirebaseStorage.getInstance().getReference();
+
         options.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES);
         options.setCaptureActivity(CaptureAct.class);
 //        options.setPrompt("Scan a barcode");
@@ -92,7 +137,6 @@ public class NewPostFragment extends BaseFragment {
         binding.fabSubmitPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                binding.fabSubmitPost.hide();
                 submitPost();
             }
         });
@@ -100,10 +144,16 @@ public class NewPostFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 binding.fabback.hide();
-                NavHostFragment.findNavController(NewPostFragment.this)
-                        .navigate(R.id.action_NewPostFragment_to_MainFragment);
+                NavHostFragment.findNavController(UpdatePostFragment.this)
+                        .navigate(R.id.action_UpdatePostFragment_to_MainFragment);
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
     }
 
     private void openFileChooser(){
@@ -119,6 +169,25 @@ public class NewPostFragment extends BaseFragment {
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
+    private void deleteFile(String file){
+        StorageReference desertRef = mStorageRef.child(file);
+
+        // Delete the file
+        desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                // File deleted successfully
+                Toast.makeText(context, "已移除前次盤點圖片", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Uh-oh, an error occurred!
+                Toast.makeText(context, "移除前次盤點圖片失敗", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
     private String uploadFile() {
         final String fileName;
         if (mImageUri != null) {
@@ -130,16 +199,16 @@ public class NewPostFragment extends BaseFragment {
             mUploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(getContext(), "image upload failure", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "image upload failure", Toast.LENGTH_SHORT).show();
                 }
             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(context, "image upload success", Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "image upload success: ");
                 }
             });
         } else {
-            Toast.makeText(getContext(), "No file selected", Toast.LENGTH_SHORT).show();
             fileName = null;
         }
         return fileName;
@@ -156,75 +225,48 @@ public class NewPostFragment extends BaseFragment {
     }
 
     private void submitPost() {
-
-
-//        final String count = binding.fieldCount.getText().toString();
-//        final String format = binding.fieldFormat.getText().toString();
-
-//        final String snumber = binding.fieldSNumber.getText().toString();
-//        final String unit = binding.fieldUnit.getText().toString();
         final String name = binding.fieldName.getText().toString();
         final String barcode = binding.fieldBarcode.getText().toString();
         final String number = binding.fieldNumber.getText().toString();
         final String location = binding.fieldLocation.getText().toString();
         final String remarks = binding.fieldRemarks.getText().toString();
-
-
         // Title is required
         if (TextUtils.isEmpty(location)) {
             binding.fieldLocation.setError(REQUIRED);
             return;
         }
-
-//        // Title is required
-//        if (TextUtils.isEmpty(snumber)) {
-//            binding.fieldSNumber.setError(REQUIRED);
-//            return;
-//        }
-
         // Title is required
         if (TextUtils.isEmpty(name)) {
             binding.fieldName.setError(REQUIRED);
             return;
         }
-
-//        // Title is required
-//        if (TextUtils.isEmpty(format)) {
-//            binding.fieldFormat.setError(REQUIRED);
-//            return;
-//        }
-
-//        // Title is required
-//        if (TextUtils.isEmpty(unit)) {
-//            binding.fieldUnit.setError(REQUIRED);
-//            return;
-//        }
-
         // Title is required
         if (TextUtils.isEmpty(number)) {
             binding.fieldNumber.setError(REQUIRED);
             return;
         }
-//        // Title is required
-//        if (TextUtils.isEmpty(count)) {
-//            binding.fieldCount.setError(REQUIRED);
-//            return;
-//        }
 
-        String FileName = "null";
+        String FileName = null;
         if (mUploadTask != null && mUploadTask.isInProgress()) {
-            Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "尚有其他上傳程序執行中，請再試一次", Toast.LENGTH_SHORT).show();
         } else {
-            FileName = uploadFile();
-
+            FileName = uploadFile(); //有選到新照片進行上傳照片到Storage
+        }
+        if(FileName!=null){
+            uploadFileName = FileName;
         }
 
-        final String uploadFileName = FileName;
+        if(loadFileName!=null) {
+            if(!uploadFileName.equals(loadFileName)){
+                Toast.makeText(context, "要刪了!!!!!!!!!!!!!!!!!!!", Toast.LENGTH_LONG).show();
+                deleteFile(loadFileName);
+            }
+        }
+
         // Disable button so there are no multi-posts
         setEditingEnabled(false);
         Toast.makeText(getContext(), "Posting...", Toast.LENGTH_SHORT).show();
 
-        final String userId = getUid();
         mDatabase.child("users").child(userId).addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -241,12 +283,11 @@ public class NewPostFragment extends BaseFragment {
                         } else {
                             // Write new post
                             writeNewPost(userId, user.username, name, barcode, number, location, remarks, uploadFileName);
-//                            writeNewPost(userId, user.username, location, number, count, format, remarks, barcode, snumber, unit, name, uploadFileName);
                         }
 
                         setEditingEnabled(true);
-                        NavHostFragment.findNavController(NewPostFragment.this)
-                                .navigate(R.id.action_NewPostFragment_to_MainFragment);
+                        NavHostFragment.findNavController(UpdatePostFragment.this)
+                                .navigate(R.id.action_UpdatePostFragment_to_MainFragment);
                     }
 
                     @Override
@@ -276,14 +317,28 @@ public class NewPostFragment extends BaseFragment {
     private void writeNewPost(String userId, String username, String name, String barcode, String number, String location, String remarks, String uploadFileName) {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
-        String key = mDatabase.child("posts").push().getKey();
         Post post = new Post(userId, username, name, barcode,number,location,remarks, uploadFileName);
         Map<String, Object> postValues = post.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/posts/" + key, postValues);
-        childUpdates.put("/user-posts/" + userId + "/" + key, postValues);
-        mDatabase.updateChildren(childUpdates);
+        childUpdates.put("/posts/" + mPostKey, postValues);
+        childUpdates.put("/user-posts/" + userId + "/" + mPostKey, postValues);
+        mDatabase.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Toast.makeText(context, "更新資料成功", Toast.LENGTH_SHORT).show();
+                binding.fabSubmitPost.show();
+            }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(context, "更新資料失敗QQ", Toast.LENGTH_SHORT).show();
+                binding.fabSubmitPost.show();
+            }
+        });
     }
+
+
 
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),

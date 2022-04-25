@@ -66,6 +66,7 @@ public abstract class PostListFragment extends Fragment {
         mManager.setReverseLayout(true);
         mManager.setStackFromEnd(true);
         mRecycler.setLayoutManager(mManager);
+        mRecycler.setItemAnimator(null);
 
         // Set up FirebaseRecyclerAdapter with the Query
         Query postsQuery = getQuery(mDatabase);
@@ -88,7 +89,7 @@ public abstract class PostListFragment extends Fragment {
 
                 // Set click listener for the whole post view
                 final String postKey = postRef.getKey();
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() { //這裡會跳進去每個itemView的詳細資料
                     @Override
                     public void onClick(View v) {
                         // Launch PostDetailFragment

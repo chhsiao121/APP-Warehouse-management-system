@@ -1,6 +1,9 @@
 package com.chhsiao.firebase.quickstart.database.java;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,8 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,8 +23,10 @@ import com.chhsiao.firebase.quickstart.database.java.models.Comment;
 import com.chhsiao.firebase.quickstart.database.java.models.Post;
 import com.chhsiao.firebase.quickstart.database.java.models.User;
 import com.chhsiao.firebase.quickstart.database.java.viewholder.CommentViewHolder;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,6 +37,8 @@ import com.google.firebase.quickstart.database.R;
 import com.google.firebase.quickstart.database.databinding.FragmentPostDetailBinding;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.leinardi.android.speeddial.SpeedDialActionItem;
+import com.leinardi.android.speeddial.SpeedDialView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -48,10 +57,31 @@ public class PostDetailFragment extends BaseFragment {
     private ValueEventListener mPostListener;
     private String mPostKey;
     private CommentAdapter mAdapter;
-
+    private Post post;
+    private Context context;
+    private String author,location,name,number,remarks,barcode;
+    private String uploadFileName;
     private StorageReference storageReference;
 
     private FragmentPostDetailBinding binding;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // This callback will only be called when MyFragment is at least Started.
+        //返回建功能
+        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+            @Override
+            public void handleOnBackPressed() {
+                // Handle the back button event
+                NavHostFragment.findNavController(PostDetailFragment.this)
+                        .navigate(R.id.action_PostDetailFragment_to_MainFragment);
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+
+        // The callback can be enabled or disabled here or in handleOnBackPressed()
+    }
 
     @Nullable
     @Override
@@ -69,7 +99,7 @@ public class PostDetailFragment extends BaseFragment {
         if (mPostKey == null) {
             throw new IllegalArgumentException("Must pass EXTRA_POST_KEY");
         }
-
+        context = getContext();
         // Initialize Database
         mPostReference = FirebaseDatabase.getInstance().getReference()
                 .child("posts").child(mPostKey);
@@ -85,13 +115,129 @@ public class PostDetailFragment extends BaseFragment {
 //            }
 //        });
 //        binding.recyclerPostComments.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.backbutton.setOnClickListener(new View.OnClickListener() {
+
+
+
+        //FloatingActionButtonSpeedDial
+
+        SpeedDialActionItem itemEdit = new SpeedDialActionItem.Builder(
+                R.id.fab_edit, R.drawable.ic_baseline_edit_note_24)
+                .setLabel("編輯盤點項目")
+                .setLabelClickable(false)
+                .setTheme(R.style.AppTheme_Cyan)
+                .create();
+        SpeedDialActionItem itemDel = new SpeedDialActionItem.Builder(
+                R.id.fab_del, R.drawable.ic_baseline_delete_forever_24)
+                .setLabel("刪除此盤點項目")
+                .setLabelClickable(false)
+                .setTheme(R.style.AppTheme_Cyan)
+                .create();
+        SpeedDialActionItem itemBack = new SpeedDialActionItem.Builder(
+                R.id.fab_back, R.drawable.ic_baseline_arrow_back_24)
+                .setLabel("返回")
+                .setLabelClickable(false)
+                .setTheme(R.style.AppTheme_Cyan)
+                .create();
+
+        binding.speedDial.addActionItem(itemEdit);
+        binding.speedDial.addActionItem(itemDel);
+        binding.speedDial.addActionItem(itemBack);
+        binding.speedDial.setOnActionSelectedListener(new SpeedDialView.OnActionSelectedListener() {
             @Override
-            public void onClick(View v) {
-                NavHostFragment.findNavController(PostDetailFragment.this)
-                        .navigate(R.id.action_PostDetailFragment_to_MainFragment);
+            public boolean onActionSelected(SpeedDialActionItem actionItem) {
+                switch (actionItem.getId()){
+                    case R.id.fab_edit:
+                        if(!post.uid.equals(getUid())){
+                            Toast.makeText(getContext(),"無法編輯其他使用者盤點之物件",Toast.LENGTH_SHORT).show();
+                        }
+                        else{
+                            Bundle args = new Bundle();
+                            args.putString(PostDetailFragment.EXTRA_POST_KEY, mPostKey);
+                            if(post != null) {
+                                args.putString("location",location);
+                                args.putString("name",name);
+                                args.putString("number",number);
+                                args.putString("remarks",remarks);
+                                args.putString("barcode",barcode);
+                                args.putString("uploadFileName",uploadFileName);
+                            }
+                            NavHostFragment.findNavController(PostDetailFragment.this)
+                                    .navigate(R.id.action_PostDetailFragment_to_UpdatePostFragment,args);
+                        }
+                        break;
+                    case R.id.fab_del:
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setMessage("確定要刪除\n盤點碼"+post.barcode+"的"+post.name+"嗎");
+                        builder.setTitle("刪除此盤點項目");
+                        builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteData();
+                            }
+                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getContext(), "已取消", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                        break;
+                    case R.id.fab_back:
+                        NavHostFragment.findNavController(PostDetailFragment.this)
+                                .navigate(R.id.action_PostDetailFragment_to_MainFragment);
+                        break;
+                }
+                return false;
             }
         });
+
+
+    }
+    private void deleteData(){
+
+        int a =1;
+        mPostReference.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    Toast.makeText(context, "已刪除post", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+        DatabaseReference mUserpostReference = FirebaseDatabase.getInstance().getReference()
+                .child("user-posts").child(post.uid).child(mPostKey);
+        mUserpostReference.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    Toast.makeText(context, "已刪除user-post", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+
+        if (post.uploadFileName != null) {
+            uploadFileName = post.uploadFileName;
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference();
+            storageRef.child(uploadFileName).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    // File deleted successfully
+                    Toast.makeText(context, "已刪除圖片", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Uh-oh, an error occurred!
+                }
+            });
+        }
+
+        NavHostFragment.findNavController(PostDetailFragment.this)
+                .navigate(R.id.action_PostDetailFragment_to_MainFragment);
     }
 
     @Override
@@ -105,36 +251,44 @@ public class PostDetailFragment extends BaseFragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
-                Post post = dataSnapshot.getValue(Post.class);
-                binding.postAuthorLayout.postAuthor.setText(post.author);
-                binding.postTextLayout.postLocation.setText(post.location);
-                binding.postTextLayout.postSNumber.setText(post.snumber);
-                binding.postTextLayout.postName.setText(post.name);
-                binding.postTextLayout.postFormat.setText(post.format);
-                binding.postTextLayout.postUnit.setText(post.unit);
-                binding.postTextLayout.postNumber.setText(post.number);
-                binding.postTextLayout.postCount.setText(post.count);
-                binding.postTextLayout.postRemarks.setText(post.remarks);
-                String uploadFileName = new String("default name");
-                if(post.uploadFileName != null){
-                    uploadFileName =  post.uploadFileName;
+                if(dataSnapshot.exists()) {
+                    post = dataSnapshot.getValue(Post.class);
+                    author = post.author;
+                    location = post.location;
+                    name = post.name;
+                    number = post.number;
+                    remarks = post.remarks;
+                    barcode = post.barcode;
+                    binding.postAuthorLayout.postAuthor.setText(author);
+                    binding.postTextLayout.postLocation.setText(location);
+                    binding.postTextLayout.postName.setText(name);
+                    binding.postTextLayout.postNumber.setText(number);
+                    binding.postTextLayout.postRemarks.setText(remarks);
+                    binding.postTextLayout.postBarcode.setText(barcode);
+
+                    if (post.uploadFileName != null) {
+                        uploadFileName = post.uploadFileName;
+                    }
                 }
-                FirebaseStorage storage = FirebaseStorage.getInstance();
-                StorageReference storageRef = storage.getReference();
-                storageRef.child(uploadFileName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        // Got the download URL for 'users/me/profile.png'
-                        Picasso.get().load(uri).into(binding.imageView2);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
-                        binding.imageView2.setImageResource(R.drawable.images);
-                        Toast.makeText(getContext(), "Failed to load image from Firebase.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                if(uploadFileName!=null){
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference storageRef = storage.getReference();
+                    storageRef.child(uploadFileName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            // Got the download URL for 'users/me/profile.png'
+                            Picasso.get().load(uri).into(binding.imageView2);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle any errors
+                            binding.imageView2.setImageResource(R.drawable.images);
+                            Toast.makeText(context, "Failed to load image from Firebase.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
 
 //                storageReference.child(post.uploadFileName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
 //                    @Override
