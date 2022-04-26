@@ -3,4 +3,7 @@
     <item name="fab_del" type="id"/>
     <item name="fab_back" type="id"/>
     <item name="fab_edit" type="id"/>
+    <item name="fab_scan" type="id"/>
+    <item name="fab_addImage" type="id"/>
+    <item name="fab_submit" type="id"/>
 </resources>

@@ -1,6 +1,7 @@
 package com.chhsiao.firebase.quickstart.database.java;
 import static android.app.Activity.RESULT_OK;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,6 +43,8 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
+import com.leinardi.android.speeddial.SpeedDialActionItem;
+import com.leinardi.android.speeddial.SpeedDialView;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
@@ -65,6 +68,24 @@ public class UpdatePostFragment extends BaseFragment {
     ScanOptions options = new ScanOptions();
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // This callback will only be called when MyFragment is at least Started.
+        //返回建功能
+        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+            @Override
+            public void handleOnBackPressed() {
+                // Handle the back button event
+                NavHostFragment.findNavController(UpdatePostFragment.this)
+                        .navigate(R.id.action_UpdatePostFragment_to_MainFragment);
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+
+        // The callback can be enabled or disabled here or in handleOnBackPressed()
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -83,13 +104,18 @@ public class UpdatePostFragment extends BaseFragment {
         loadFileName = requireArguments().getString("uploadFileName"); //資料庫中影像名稱
         uploadFileName = loadFileName;
 
-        binding.fabSubmitPost.show();
-        binding.fabback.show();
-        binding.fieldLocation.setText(location);
-        binding.fieldName.setText(name);
-        binding.fieldNumber.setText(number);
-        binding.fieldRemarks.setText(remarks);
-        binding.fieldBarcode.setText(barcode);
+//        binding.fabSubmitPost.show();
+//        binding.fabback.show();
+        binding.textInputLayoutLocation.getEditText().setText(location);
+        binding.textInputLayoutName.getEditText().setText(name);
+        binding.textInputLayoutNumber.getEditText().setText(number);
+        binding.textInputLayoutRemarks.getEditText().setText(remarks);
+        binding.textInputLayoutBarcode.getEditText().setText(barcode);
+//        binding.fieldLocation.setText(location);
+//        binding.fieldName.setText(name);
+//        binding.fieldNumber.setText(number);
+//        binding.fieldRemarks.setText(remarks);
+//        binding.fieldBarcode.setText(barcode);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         if (loadFileName!=null) {
@@ -122,30 +148,54 @@ public class UpdatePostFragment extends BaseFragment {
         options.setOrientationLocked(false);
         options.setBeepEnabled(false);
         options.setBarcodeImageEnabled(false);
-        binding.fabBarcodeScan.setOnClickListener(new View.OnClickListener() {
+        SpeedDialActionItem itemBack = new SpeedDialActionItem.Builder(
+                R.id.fab_back, R.drawable.ic_baseline_arrow_back_24)
+                .setLabel("返回")
+                .setLabelClickable(false)
+                .setTheme(R.style.AppTheme_Cyan)
+                .create();
+        SpeedDialActionItem itemBarcodeScan = new SpeedDialActionItem.Builder(
+                R.id.fab_scan, R.drawable.ic_baseline_qr_code_scanner_24)
+                .setLabel("掃描盤點碼")
+                .setLabelClickable(false)
+                .setTheme(R.style.AppTheme_Cyan)
+                .create();
+        SpeedDialActionItem itemAddImage = new SpeedDialActionItem.Builder(
+                R.id.fab_addImage, R.drawable.ic_baseline_add_a_photo_24)
+                .setLabel("新增盤點照片")
+                .setLabelClickable(false)
+                .setTheme(R.style.AppTheme_Cyan)
+                .create();
+        SpeedDialActionItem itemSubmitPost = new SpeedDialActionItem.Builder(
+                R.id.fab_submit, R.drawable.ic_navigation_check_24)
+                .setLabel("上傳此盤點")
+                .setLabelClickable(false)
+                .setTheme(R.style.AppTheme_Cyan)
+                .create();
+
+        binding.speedDial.addActionItem(itemSubmitPost);
+        binding.speedDial.addActionItem(itemAddImage);
+        binding.speedDial.addActionItem(itemBarcodeScan);
+        binding.speedDial.addActionItem(itemBack);
+        binding.speedDial.setOnActionSelectedListener(new SpeedDialView.OnActionSelectedListener() {
             @Override
-            public void onClick(View v) {
-                barcodeLauncher.launch(options);
-            }
-        });
-        binding.fabAddImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openFileChooser();
-            }
-        });
-        binding.fabSubmitPost.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                submitPost();
-            }
-        });
-        binding.fabback.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.fabback.hide();
-                NavHostFragment.findNavController(UpdatePostFragment.this)
-                        .navigate(R.id.action_UpdatePostFragment_to_MainFragment);
+            public boolean onActionSelected(SpeedDialActionItem actionItem) {
+                switch (actionItem.getId()){
+                    case R.id.fab_back:
+                        NavHostFragment.findNavController(UpdatePostFragment.this)
+                                .navigate(R.id.action_UpdatePostFragment_to_MainFragment);
+                        break;
+                    case R.id.fab_scan:
+                        barcodeLauncher.launch(options);
+                        break;
+                    case R.id.fab_addImage:
+                        openFileChooser();
+                        break;
+                    case R.id.fab_submit:
+                        submitPost();
+                        break;
+                }
+                return false;
             }
         });
     }
@@ -225,24 +275,33 @@ public class UpdatePostFragment extends BaseFragment {
     }
 
     private void submitPost() {
-        final String name = binding.fieldName.getText().toString();
-        final String barcode = binding.fieldBarcode.getText().toString();
-        final String number = binding.fieldNumber.getText().toString();
-        final String location = binding.fieldLocation.getText().toString();
-        final String remarks = binding.fieldRemarks.getText().toString();
-        // Title is required
-        if (TextUtils.isEmpty(location)) {
-            binding.fieldLocation.setError(REQUIRED);
-            return;
-        }
+
+        final String name = binding.textInputLayoutName.getEditText().getText().toString();
+        final String barcode = binding.textInputLayoutBarcode.getEditText().getText().toString();
+        final String number = binding.textInputLayoutNumber.getEditText().getText().toString();
+        final String location = binding.textInputLayoutLocation.getEditText().getText().toString();
+        final String remarks = binding.textInputLayoutRemarks.getEditText().getText().toString();
+//        final String name = binding.fieldName.getText().toString();
+//        final String barcode = binding.fieldBarcode.getText().toString();
+//        final String number = binding.fieldNumber.getText().toString();
+//        final String location = binding.fieldLocation.getText().toString();
+//        final String remarks = binding.fieldRemarks.getText().toString();
         // Title is required
         if (TextUtils.isEmpty(name)) {
-            binding.fieldName.setError(REQUIRED);
+//            binding.fieldName.setError(REQUIRED);
+            binding.textInputLayoutName.setError(REQUIRED);
+            return;
+        }
+        //Title is required
+        if (TextUtils.isEmpty(number)) {
+//            binding.fieldNumber.setError(REQUIRED);
+            binding.textInputLayoutNumber.setError(REQUIRED);
             return;
         }
         // Title is required
-        if (TextUtils.isEmpty(number)) {
-            binding.fieldNumber.setError(REQUIRED);
+        if (TextUtils.isEmpty(location)) {
+//            binding.fieldLocation.setError(REQUIRED);
+            binding.textInputLayoutLocation.setError(REQUIRED);
             return;
         }
 
@@ -299,20 +358,16 @@ public class UpdatePostFragment extends BaseFragment {
     }
 
     private void setEditingEnabled(boolean enabled) {
-//        binding.fieldLocation.setEnabled(enabled);
-//        binding.fieldSNumber.setEnabled(enabled);
-        binding.fieldName.setEnabled(enabled);
-//        binding.fieldFormat.setEnabled(enabled);
-//        binding.fieldUnit.setEnabled(enabled);
-        binding.fieldNumber.setEnabled(enabled);
-//        binding.fieldCount.setEnabled(enabled);
-        binding.fieldRemarks.setEnabled(enabled);
-        binding.fieldBarcode.setEnabled(enabled);
-        if (enabled) {
-            binding.fabSubmitPost.show();
-        } else {
-            binding.fabSubmitPost.hide();
-        }
+        binding.textInputLayoutName.setEnabled(enabled);
+        binding.textInputLayoutBarcode.setEnabled(enabled);
+        binding.textInputLayoutNumber.setEnabled(enabled);
+        binding.textInputLayoutLocation.setEnabled(enabled);
+        binding.textInputLayoutRemarks.setEnabled(enabled);
+//        if (enabled) {
+//            binding.fabSubmitPost.show();
+//        } else {
+//            binding.fabSubmitPost.hide();
+//        }
     }
     private void writeNewPost(String userId, String username, String name, String barcode, String number, String location, String remarks, String uploadFileName) {
         // Create new post at /user-posts/$userid/$postid and at
@@ -326,14 +381,14 @@ public class UpdatePostFragment extends BaseFragment {
             @Override
             public void onSuccess(Void unused) {
                 Toast.makeText(context, "更新資料成功", Toast.LENGTH_SHORT).show();
-                binding.fabSubmitPost.show();
+//                binding.fabSubmitPost.show();
             }
         })
         .addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(context, "更新資料失敗QQ", Toast.LENGTH_SHORT).show();
-                binding.fabSubmitPost.show();
+//                binding.fabSubmitPost.show();
             }
         });
     }
@@ -355,7 +410,7 @@ public class UpdatePostFragment extends BaseFragment {
                     }).setNegativeButton("finish", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            binding.fieldBarcode.setText(result.getContents());
+                            binding.textInputLayoutBarcode.getEditText().setText(result.getContents());
                         }
                     });
                     AlertDialog dialog = builder.create();
