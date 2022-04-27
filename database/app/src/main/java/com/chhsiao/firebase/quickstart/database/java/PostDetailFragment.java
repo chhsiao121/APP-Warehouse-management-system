@@ -62,7 +62,7 @@ public class PostDetailFragment extends BaseFragment {
     private String author,location,name,number,remarks,barcode;
     private String uploadFileName;
     private StorageReference storageReference;
-
+    private String proLocation;
     private FragmentPostDetailBinding binding;
 
     @Override
@@ -74,8 +74,10 @@ public class PostDetailFragment extends BaseFragment {
             @Override
             public void handleOnBackPressed() {
                 // Handle the back button event
+                Bundle args = new Bundle();
+                args.putString("location", proLocation);
                 NavHostFragment.findNavController(PostDetailFragment.this)
-                        .navigate(R.id.action_PostDetailFragment_to_MainFragment);
+                        .navigate(R.id.action_PostDetailFragment_to_MainFragment,args);
             }
         };
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
@@ -93,7 +95,7 @@ public class PostDetailFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        proLocation = MainFragment.proLocation;
         // Get post key from arguments
         mPostKey = requireArguments().getString(EXTRA_POST_KEY);
         if (mPostKey == null) {
@@ -101,9 +103,9 @@ public class PostDetailFragment extends BaseFragment {
         }
         context = getContext();
         // Initialize Database
-        mPostReference = FirebaseDatabase.getInstance().getReference()
+        mPostReference = FirebaseDatabase.getInstance().getReference().child(proLocation)
                 .child("posts").child(mPostKey);
-        mCommentsReference = FirebaseDatabase.getInstance().getReference()
+        mCommentsReference = FirebaseDatabase.getInstance().getReference().child(proLocation)
                 .child("post-comments").child(mPostKey);
 //        var storageRef = storage.ref();
 //        storageReference = storage.getReference();
@@ -184,8 +186,10 @@ public class PostDetailFragment extends BaseFragment {
                         dialog.show();
                         break;
                     case R.id.fab_back:
+                        Bundle args = new Bundle();
+                        args.putString("location", proLocation);
                         NavHostFragment.findNavController(PostDetailFragment.this)
-                                .navigate(R.id.action_PostDetailFragment_to_MainFragment);
+                                .navigate(R.id.action_PostDetailFragment_to_MainFragment,args);
                         break;
                 }
                 return false;
@@ -206,7 +210,7 @@ public class PostDetailFragment extends BaseFragment {
                 }
             }
         });
-        DatabaseReference mUserpostReference = FirebaseDatabase.getInstance().getReference()
+        DatabaseReference mUserpostReference = FirebaseDatabase.getInstance().getReference().child(proLocation)
                 .child("user-posts").child(post.uid).child(mPostKey);
         mUserpostReference.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -235,9 +239,10 @@ public class PostDetailFragment extends BaseFragment {
                 }
             });
         }
-
+        Bundle args = new Bundle();
+        args.putString("location", proLocation);
         NavHostFragment.findNavController(PostDetailFragment.this)
-                .navigate(R.id.action_PostDetailFragment_to_MainFragment);
+                .navigate(R.id.action_PostDetailFragment_to_MainFragment,args);
     }
 
     @Override

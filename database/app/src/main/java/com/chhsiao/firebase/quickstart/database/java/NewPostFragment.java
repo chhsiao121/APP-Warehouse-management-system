@@ -53,7 +53,7 @@ public class NewPostFragment extends BaseFragment {
 
     private DatabaseReference mDatabase;
     private StorageReference mStorageRef;
-
+    private String proLocation;
     private FragmentNewPostBinding binding;
     private StorageTask mUploadTask;
     private Uri mImageUri;
@@ -68,8 +68,10 @@ public class NewPostFragment extends BaseFragment {
             @Override
             public void handleOnBackPressed() {
                 // Handle the back button event
+                Bundle args = new Bundle();
+                args.putString("location", proLocation);
                 NavHostFragment.findNavController(NewPostFragment.this)
-                        .navigate(R.id.action_NewPostFragment_to_MainFragment);
+                        .navigate(R.id.action_NewPostFragment_to_MainFragment,args);
             }
         };
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
@@ -90,6 +92,7 @@ public class NewPostFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        proLocation = MainFragment.proLocation;
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         options.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES);
@@ -133,8 +136,10 @@ public class NewPostFragment extends BaseFragment {
             public boolean onActionSelected(SpeedDialActionItem actionItem) {
                 switch (actionItem.getId()){
                     case R.id.fab_back:
+                        Bundle args = new Bundle();
+                        args.putString("location", proLocation);
                         NavHostFragment.findNavController(NewPostFragment.this)
-                                .navigate(R.id.action_NewPostFragment_to_MainFragment);
+                                .navigate(R.id.action_NewPostFragment_to_MainFragment,args);
                         break;
                     case R.id.fab_scan:
                         barcodeLauncher.launch(options);
@@ -300,8 +305,10 @@ public class NewPostFragment extends BaseFragment {
                         }
 
                         setEditingEnabled(true);
+                        Bundle args = new Bundle();
+                        args.putString("location", proLocation);
                         NavHostFragment.findNavController(NewPostFragment.this)
-                                .navigate(R.id.action_NewPostFragment_to_MainFragment);
+                                .navigate(R.id.action_NewPostFragment_to_MainFragment,args);
                     }
 
                     @Override
@@ -339,12 +346,12 @@ public class NewPostFragment extends BaseFragment {
     private void writeNewPost(String userId, String username, String name, String barcode, String number, String location, String remarks, String uploadFileName) {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
-        String key = mDatabase.child("posts").push().getKey();
+        String key = mDatabase.child(proLocation).child("posts").push().getKey();
         Post post = new Post(userId, username, name, barcode,number,location,remarks, uploadFileName);
         Map<String, Object> postValues = post.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/posts/" + key, postValues);
-        childUpdates.put("/user-posts/" + userId + "/" + key, postValues);
+        childUpdates.put("/"+proLocation+"/posts/" + key, postValues);
+        childUpdates.put("/"+proLocation+"/user-posts/" + userId + "/" + key, postValues);
         mDatabase.updateChildren(childUpdates);
     }
 

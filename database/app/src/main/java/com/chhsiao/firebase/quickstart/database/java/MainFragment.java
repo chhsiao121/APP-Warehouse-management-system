@@ -24,6 +24,7 @@ import com.chhsiao.firebase.quickstart.database.java.listfragments.RecentPostsFr
 
 public class MainFragment extends Fragment {
 
+    public static String proLocation;
     private FragmentMainBinding binding;
 
     @Nullable
@@ -37,6 +38,7 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
+        proLocation = requireArguments().getString("location");
 
         // Create the adapter that will return a fragment for each section
         FragmentStateAdapter mPagerAdapter = new FragmentStateAdapter (getParentFragmentManager(),

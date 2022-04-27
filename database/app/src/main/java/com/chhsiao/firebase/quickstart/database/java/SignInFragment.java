@@ -124,7 +124,7 @@ public class SignInFragment extends BaseFragment implements View.OnClickListener
         writeNewUser(user.getUid(), username, user.getEmail());
 
         // Go to MainFragment
-        NavHostFragment.findNavController(this).navigate(R.id.action_SignInFragment_to_MainFragment);
+        NavHostFragment.findNavController(this).navigate(R.id.action_SignInFragment_to_LocationFragment);
     }
 
     private String usernameFromEmail(String email) {

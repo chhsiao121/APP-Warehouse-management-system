@@ -60,6 +60,7 @@ public class  MainActivity extends AppCompatActivity {
                 } else {
                     fab.setVisibility(View.GONE);
                 }
+
             }
         });
     }

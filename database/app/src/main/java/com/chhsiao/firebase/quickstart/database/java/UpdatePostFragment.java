@@ -59,6 +59,7 @@ public class UpdatePostFragment extends BaseFragment {
     private Uri mImageUri;
     private Context context;
     private String mPostKey;
+    private String proLocation;
     private String location,name,number,remarks,barcode,uploadFileName,loadFileName;
     private final String userId = getUid();
     public static final String EXTRA_POST_KEY = "post_key";
@@ -76,8 +77,10 @@ public class UpdatePostFragment extends BaseFragment {
             @Override
             public void handleOnBackPressed() {
                 // Handle the back button event
+                Bundle args = new Bundle();
+                args.putString("location", proLocation);
                 NavHostFragment.findNavController(UpdatePostFragment.this)
-                        .navigate(R.id.action_UpdatePostFragment_to_MainFragment);
+                        .navigate(R.id.action_UpdatePostFragment_to_MainFragment,args);
             }
         };
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
@@ -91,6 +94,7 @@ public class UpdatePostFragment extends BaseFragment {
         // Inflate the layout for this fragment
         binding = FragmentUpdatePostBinding.inflate(inflater, container, false);
         // Get post key from arguments
+        proLocation = MainFragment.proLocation;
         mPostKey = requireArguments().getString(EXTRA_POST_KEY);
         if (mPostKey == null) {
             throw new IllegalArgumentException("Must pass EXTRA_POST_KEY");
@@ -182,8 +186,10 @@ public class UpdatePostFragment extends BaseFragment {
             public boolean onActionSelected(SpeedDialActionItem actionItem) {
                 switch (actionItem.getId()){
                     case R.id.fab_back:
+                        Bundle args = new Bundle();
+                        args.putString("location", proLocation);
                         NavHostFragment.findNavController(UpdatePostFragment.this)
-                                .navigate(R.id.action_UpdatePostFragment_to_MainFragment);
+                                .navigate(R.id.action_UpdatePostFragment_to_MainFragment,args);
                         break;
                     case R.id.fab_scan:
                         barcodeLauncher.launch(options);
@@ -345,8 +351,10 @@ public class UpdatePostFragment extends BaseFragment {
                         }
 
                         setEditingEnabled(true);
+                        Bundle args = new Bundle();
+                        args.putString("location", proLocation);
                         NavHostFragment.findNavController(UpdatePostFragment.this)
-                                .navigate(R.id.action_UpdatePostFragment_to_MainFragment);
+                                .navigate(R.id.action_UpdatePostFragment_to_MainFragment,args);
                     }
 
                     @Override
@@ -375,8 +383,8 @@ public class UpdatePostFragment extends BaseFragment {
         Post post = new Post(userId, username, name, barcode,number,location,remarks, uploadFileName);
         Map<String, Object> postValues = post.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/posts/" + mPostKey, postValues);
-        childUpdates.put("/user-posts/" + userId + "/" + mPostKey, postValues);
+        childUpdates.put("/"+proLocation+"/posts/" + mPostKey, postValues);
+        childUpdates.put("/"+proLocation+"/user-posts/" + userId + "/" + mPostKey, postValues);
         mDatabase.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
