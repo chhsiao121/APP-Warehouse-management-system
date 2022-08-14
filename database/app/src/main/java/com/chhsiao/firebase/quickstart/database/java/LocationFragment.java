@@ -158,6 +158,14 @@ public class LocationFragment extends BaseFragment {
                 }
             }
         });
+
+        binding.btnTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavHostFragment.findNavController(LocationFragment.this)
+                        .navigate(R.id.action_LocationFragment_to_InventoryFragment);
+            }
+        });
     }
 
     private boolean networkIsConnect(){
