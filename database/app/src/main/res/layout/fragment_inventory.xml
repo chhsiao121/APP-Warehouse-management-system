@@ -1,17 +1,55 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="8dp"
     tools:context="com.chhsiao.firebase.quickstart.database.java.InventoryFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <include
         android:id="@+id/T22AuthorLayout"
         layout="@layout/include_t22_author"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.646"
+        android:layout_width="329dp"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="0dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxWidth="329dp"
+        android:maxHeight="329dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/group"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/T22AuthorLayout" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnScanBarcode"
+        android:layout_width="116dp"
+        android:layout_height="34dp"
+        android:text="掃條碼"
+        android:textColor="#FFFFFF"
+        android:textSize="14dp"
+        android:background="@drawable/custom_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnPhotograph"
+        android:layout_width="116dp"
+        android:layout_height="34dp"
+        android:text="拍照"
+        android:textColor="#FFFFFF"
+        android:textSize="14dp"
+        android:background="@drawable/custom_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
