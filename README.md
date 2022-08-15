@@ -1,17 +1,19 @@
 # 倉儲盤點 APP
 
 <p float="left">
-  <img src="../../blob/main/5.jpg?raw=true" width="250" />
-  <img src="../../blob/main/4.jpg?raw=true" width="250" /> 
-  <img src="../../blob/main/3.jpg?raw=true" width="250" />
-  <img src="../../blob/main/2.jpg?raw=true" width="250" />
-  <img src="../../blob/main/1.jpg?raw=true" width="250" />
+  <img src="src/screen1.jpg?raw=true" width="250" />
+  <img src="src/screen2.png?raw=true" width="250" />
+  <img src="src/screen3.png?raw=true" width="250" />
+  <img src="src/screen4.png?raw=true" width="250" />
+  <img src="src/screen5.png?raw=true" width="250" />
+  <img src="src/screen6.png?raw=true" width="250" />
 </p>
 
 ## 簡介
 
 - 使用者註冊、登入系統
-- 查看、新增盤點資料
+- 查看、新增、修改、刪除盤點資料
+- 具備條碼掃描功能
 - 使用者可依多種預設項目填寫
 - 資料可附加手機內照片
 - 資料庫內容會於手機連線時自動同步至遠端資料庫
@@ -84,5 +86,3 @@
 - [ ] 可自訂項目欄位模板（目前是預設）
 - [ ] 可附加多張照片
 - [ ] beta 版上架 play 商店
-
-昱愷我大哥
