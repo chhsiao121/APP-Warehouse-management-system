@@ -100,6 +100,12 @@
             <argument android:name="location" app:nullable="false" app:argType="string" android:defaultValue=""/>
         </action>
         <action
+            android:id="@+id/action_LocationFragment_to_HomeT22Fragment"
+            app:destination="@id/HomeT22Fragment"
+            app:popUpTo="@id/HomeT22Fragment">
+            <argument android:name="location" app:nullable="false" app:argType="string" android:defaultValue=""/>
+        </action>
+        <action
             android:id="@+id/action_LocationFragment_to_InventoryFragment"
             app:destination="@id/InventoryFragment"
             app:popUpTo="@id/InventoryFragment">
@@ -113,5 +119,17 @@
         android:label="@string/app_name"
         tools:layout="@layout/fragment_inventory">
 
+    </fragment>
+    <fragment
+        android:id="@+id/HomeT22Fragment"
+        android:name="com.chhsiao.firebase.quickstart.database.java.HomeT22Fragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_home_t22">
+        <action
+            android:id="@+id/action_HomeT22Fragment_to_InventoryFragment"
+            app:destination="@id/InventoryFragment"
+            app:popUpTo="@id/InventoryFragment">
+            <argument android:name="location" app:nullable="false" app:argType="string" android:defaultValue=""/>
+        </action>
     </fragment>
 </navigation>

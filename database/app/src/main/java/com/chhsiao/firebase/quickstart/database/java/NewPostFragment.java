@@ -4,8 +4,11 @@ import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,8 +44,11 @@ import com.journeyapps.barcodescanner.ScanOptions;
 import com.leinardi.android.speeddial.SpeedDialActionItem;
 import com.leinardi.android.speeddial.SpeedDialView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -174,8 +180,21 @@ public class NewPostFragment extends BaseFragment {
         final String fileName;
         if (mImageUri != null) {
             fileName = System.currentTimeMillis() + "." + getFileExtension(mImageUri);
-            StorageReference fileReference = mStorageRef.child(fileName);
-            mUploadTask = fileReference.putFile(mImageUri);
+            try{
+                Bitmap original = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), mImageUri);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                Bitmap resized = Bitmap. createScaledBitmap ( original , 1000 , 1000 , true ) ;
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                resized.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+                byte[] imageByte = baos.toByteArray();
+
+
+
+                StorageReference fileReference = mStorageRef.child(fileName);
+                mUploadTask = fileReference.putBytes(imageByte);
+            }catch (IOException e){
+                e.printStackTrace();
+            }
 
             // Register observers to listen for when the download is done or if it fails
             mUploadTask.addOnFailureListener(new OnFailureListener() {
@@ -202,7 +221,9 @@ public class NewPostFragment extends BaseFragment {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
                 && data != null && data.getData() != null) {
             mImageUri = data.getData();
-            binding.imageView.setImageURI(mImageUri);
+            if (mImageUri != null) {
+                binding.imageView.setImageURI(mImageUri);
+            }
         }
     }
 

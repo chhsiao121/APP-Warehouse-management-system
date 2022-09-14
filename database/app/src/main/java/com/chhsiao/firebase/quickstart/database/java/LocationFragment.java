@@ -162,8 +162,16 @@ public class LocationFragment extends BaseFragment {
         binding.btnTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavHostFragment.findNavController(LocationFragment.this)
-                        .navigate(R.id.action_LocationFragment_to_InventoryFragment);
+                String go_location = binding.actLocations.getText().toString();
+                if(go_location.equals("")){
+                    Toast.makeText(context,"請選擇盤點地點!!",Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Bundle args = new Bundle();
+                    args.putString("location", go_location);
+                    NavHostFragment.findNavController(LocationFragment.this)
+                            .navigate(R.id.action_LocationFragment_to_HomeT22Fragment,args);
+                }
             }
         });
     }
