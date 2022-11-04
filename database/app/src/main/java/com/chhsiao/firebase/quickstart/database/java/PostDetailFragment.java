@@ -199,8 +199,6 @@ public class PostDetailFragment extends BaseFragment {
 
     }
     private void deleteData(){
-
-        int a =1;
         mPostReference.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

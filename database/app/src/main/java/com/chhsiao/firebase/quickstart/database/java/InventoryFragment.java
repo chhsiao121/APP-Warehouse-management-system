@@ -1,23 +1,37 @@
 package com.chhsiao.firebase.quickstart.database.java;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.chhsiao.firebase.quickstart.database.java.capture.CaptureAct;
 import com.chhsiao.firebase.quickstart.database.java.models.Post;
 import com.chhsiao.firebase.quickstart.database.java.viewholder.PostT22ViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -45,7 +59,9 @@ public class InventoryFragment extends BaseFragment {
 
     private static final String TAG = "InventoryFragment";
     public static String proLocation;
+    private static final int PICK_CAMERA_REQUEST = 100;
     ScanOptions options = new ScanOptions();
+    private Uri mImageUri;
     public InventoryFragment() {
         // Required empty public constructor
     }
@@ -62,6 +78,9 @@ public class InventoryFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         proLocation = requireArguments().getString("location");
+        if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)!=PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.CAMERA},PICK_CAMERA_REQUEST);
+        }
     }
 
     @Override
@@ -78,6 +97,41 @@ public class InventoryFragment extends BaseFragment {
         return binding.getRoot();
     }
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        options.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES);
+        options.setCaptureActivity(CaptureAct.class);
+//        options.setPrompt("Scan a barcode");
+        options.setCameraId(0);  // Use a specific camera of the device
+        options.setOrientationLocked(false);
+        options.setBeepEnabled(false);
+        options.setBarcodeImageEnabled(false);
+        binding.btnScanBarcode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                barcodeLauncher.launch(options);
+            }
+        });
+        binding.btnPhotograph.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent,100);
+            }
+        });
+        binding.btnok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAdapter.notifyDataSetChanged();
+            }
+        });
+        binding.refreshLayout.setColorSchemeColors(getResources().getColor(R.color.material_cyan_a700));
+        binding.refreshLayout.setOnRefreshListener(()->{
+            mAdapter.notifyDataSetChanged();
+            binding.refreshLayout.setRefreshing(false);
+        });
+    }
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -87,6 +141,8 @@ public class InventoryFragment extends BaseFragment {
         mManager.setStackFromEnd(true);
         mRecycler.setLayoutManager(mManager);
         mRecycler.setItemAnimator(null);
+        mRecycler.setNestedScrollingEnabled(false);
+
 
         // Set up FirebaseRecyclerAdapter with the Query
         Query query = mDatabase.child("posts").limitToLast(50);
@@ -167,26 +223,28 @@ public class InventoryFragment extends BaseFragment {
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
             result -> {
                 if(result.getContents()!=null){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setMessage(result.getContents());
-                    builder.setTitle("Scanning Result");
-                    builder.setPositiveButton("Scan Again", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            barcodeLauncher.launch(options);
-                        }
-                    }).setNegativeButton("finish", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-//                            binding.fieldBarcode.setText(result.getContents());
-                            binding.textInputLayoutBarcode.getEditText().setText(result.getContents());
-                        }
-                    });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
+                    binding.textInputLayoutBarcode.getEditText().setText(result.getContents());
                 }
                 else {
                     Toast.makeText(getActivity(),"No Results",Toast.LENGTH_SHORT).show();
                 }
             });
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_CAMERA_REQUEST ){
+//            mImageUri = data.getData();
+            if(data.getExtras().get("data")!=null){
+                Bitmap bitmap = (Bitmap)data.getExtras().get("data");
+                binding.imageViewItem.setImageBitmap(bitmap);
+            }
+
+
+        }
+//            if(requestCode==100){
+//            Bitmap bitmap = (Bitmap)data.getExtras().get("data");
+//            binding.imageViewItem.setImageBitmap(bitmap);
+//        }
+    }
 }
