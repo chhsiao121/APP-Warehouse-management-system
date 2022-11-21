@@ -26,6 +26,7 @@ public class MainFragment extends Fragment {
 
     public static String proLocation;
     private FragmentMainBinding binding;
+    private boolean hideFAB;
 
     @Nullable
     @Override
@@ -39,7 +40,7 @@ public class MainFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
         proLocation = requireArguments().getString("location");
-
+        hideFAB = requireArguments().getBoolean("hideFAB");
         // Create the adapter that will return a fragment for each section
         FragmentStateAdapter mPagerAdapter = new FragmentStateAdapter (getParentFragmentManager(),
                 getViewLifecycleOwner().getLifecycle()) {
@@ -77,6 +78,8 @@ public class MainFragment extends Fragment {
                 (tab, position) -> tab.setText(mFragmentNames[position])
         ).attach();
 //        binding.tabs.setupWithViewPager(binding.container);
+
+
     }
 
     @Override

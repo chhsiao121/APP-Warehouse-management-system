@@ -77,17 +77,35 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/btnTest"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnVersion2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:text="Test"
+        android:text="前往盤點"
+        app:srcCompat="@drawable/ic_baseline_navigate_before_24"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutLocation"
-        app:layout_constraintVertical_bias="0.804" />
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Version2"
+        app:layout_constraintBottom_toTopOf="@+id/btnVersion2"
+        app:layout_constraintEnd_toEndOf="@+id/btnVersion2"
+        app:layout_constraintStart_toStartOf="@+id/btnVersion2" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Version1"
+        app:layout_constraintBottom_toTopOf="@+id/fabgo"
+        app:layout_constraintEnd_toEndOf="@+id/fabgo"
+        app:layout_constraintStart_toStartOf="@+id/fabgo" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

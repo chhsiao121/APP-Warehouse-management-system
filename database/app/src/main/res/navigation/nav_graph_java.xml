@@ -131,5 +131,15 @@
             app:popUpTo="@id/InventoryFragment">
             <argument android:name="location" app:nullable="false" app:argType="string" android:defaultValue=""/>
         </action>
+        <action
+            android:id="@+id/action_HomeT22Fragment_to_MainFragment"
+            app:destination="@id/MainFragment"
+            app:popUpTo="@id/MainFragment">
+            <argument android:name="hideFAB" app:nullable="false" app:argType="boolean" android:defaultValue="false"/>
+            <argument android:name="location" app:nullable="false" app:argType="string" android:defaultValue=""/>
+        </action>
+
+
+
     </fragment>
 </navigation>

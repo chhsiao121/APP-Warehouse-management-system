@@ -99,6 +99,7 @@ public class NewPostFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         proLocation = MainFragment.proLocation;
+        binding.textInputLayoutLocation.getEditText().setText(proLocation);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         options.setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES);

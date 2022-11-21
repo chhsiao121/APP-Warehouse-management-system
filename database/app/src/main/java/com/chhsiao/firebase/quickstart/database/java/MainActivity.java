@@ -43,20 +43,31 @@ public class  MainActivity extends AppCompatActivity {
         setSupportActionBar(binding.toolbar);
 
         fab = binding.fab;
-
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         navController.setGraph(R.navigation.nav_graph_java);
         navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
             @Override
             public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
+                boolean hideFAB;
+                if (arguments != null && arguments.containsKey("hideFAB")) {
+                    hideFAB = arguments.getBoolean("hideFAB");
+                }
+                else {
+                    hideFAB = false;
+                }
                 if (destination.getId() == R.id.MainFragment) {
-                    fab.setVisibility(View.VISIBLE);
-                    fab.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            navController.navigate(R.id.action_MainFragment_to_NewPostFragment);
-                        }
-                    });
+                    if(hideFAB){
+                        fab.setVisibility(View.GONE);
+                    }
+                    else{
+                        fab.setVisibility(View.VISIBLE);
+                        fab.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                navController.navigate(R.id.action_MainFragment_to_NewPostFragment);
+                            }
+                        });
+                    }
                 } else {
                     fab.setVisibility(View.GONE);
                 }

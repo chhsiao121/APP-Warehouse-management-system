@@ -159,7 +159,7 @@ public class LocationFragment extends BaseFragment {
             }
         });
 
-        binding.btnTest.setOnClickListener(new View.OnClickListener() {
+        binding.btnVersion2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String go_location = binding.actLocations.getText().toString();

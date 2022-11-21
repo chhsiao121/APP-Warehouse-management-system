@@ -59,6 +59,18 @@ public class HomeT22Fragment extends BaseFragment {
                         .navigate(R.id.action_HomeT22Fragment_to_InventoryFragment,args);
             }
         });
+
+        binding.btnResultInventory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putString("location", proLocation);
+                boolean hideFAB = true;
+                args.putBoolean("hideFAB", hideFAB);
+                NavHostFragment.findNavController(HomeT22Fragment.this)
+                        .navigate(R.id.action_HomeT22Fragment_to_MainFragment,args);
+            }
+        });
     }
 
 
