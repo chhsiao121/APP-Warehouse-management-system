@@ -1,0 +1,274 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context="com.chhsiao.firebase.quickstart.database.java.InventoryNoNameFragment">
+
+<include
+    android:id="@+id/T22AuthorLayout"
+    layout="@layout/include_t22_author"
+    android:layout_width="329dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+<ImageView
+    android:id="@+id/imageViewItem"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:adjustViewBounds="true"
+    android:maxWidth="329dp"
+    android:maxHeight="329dp"
+    android:scaleType="centerInside"
+    android:src="@drawable/group"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/T22AuthorLayout" />
+
+<androidx.appcompat.widget.AppCompatButton
+    android:id="@+id/btnScanBarcode"
+    android:layout_width="116dp"
+    android:layout_height="34dp"
+    android:background="@drawable/custom_button"
+    android:stateListAnimator="@null"
+    android:text="掃條碼"
+    android:textColor="#FFFFFF"
+    android:textSize="14dp"
+    app:layout_constraintEnd_toStartOf="@+id/btnPhotograph"
+    app:layout_constraintHorizontal_chainStyle="packed"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/imageViewItem" />
+
+<androidx.appcompat.widget.AppCompatButton
+    android:id="@+id/btnPhotograph"
+    android:layout_width="116dp"
+    android:layout_height="34dp"
+    android:background="@drawable/photograph_custom_button"
+    android:stateListAnimator="@null"
+    android:text="拍照"
+    android:textColor="#FFFFFF"
+    android:textSize="14dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toEndOf="@id/btnScanBarcode"
+    app:layout_constraintTop_toBottomOf="@+id/imageViewItem" />
+
+
+<com.google.android.material.textfield.TextInputLayout
+    android:id="@+id/textInputLayoutNumber"
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    android:layout_width="330dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:background="@color/Cultured"
+    android:hint="數量"
+    android:textColorHint="@color/Teal_Green"
+    app:endIconMode="clear_text"
+    app:layout_constraintEnd_toEndOf="@+id/textInputLayoutBarcode"
+    app:layout_constraintTop_toBottomOf="@+id/btnScanBarcode">
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/textbarcode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLength="20" />
+</com.google.android.material.textfield.TextInputLayout>
+
+<com.google.android.material.textfield.TextInputLayout
+    android:id="@+id/textInputLayoutBarcode"
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    android:layout_width="330dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:background="@color/Cultured"
+    android:hint="盤點碼"
+    android:maxLines="1"
+    android:textColorHint="@color/Teal_Green"
+    app:endIconMode="clear_text"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/textInputLayoutNumber">
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLength="10" />
+</com.google.android.material.textfield.TextInputLayout>
+
+<androidx.appcompat.widget.AppCompatButton
+    android:id="@+id/btnok"
+    android:layout_width="86dp"
+    android:layout_height="34dp"
+    android:layout_marginEnd="5dp"
+    android:layout_marginBottom="5dp"
+    android:background="@drawable/custom_button"
+    android:stateListAnimator="@null"
+    android:text="確定"
+    android:textColor="#FFFFFF"
+    android:textSize="14dp"
+    app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutBarcode"
+    app:layout_constraintEnd_toEndOf="@+id/textInputLayoutBarcode" />
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="600dp"
+        android:background="#FFFFFF"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="80dp"
+        app:layout_anchorGravity="bottom"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout">
+
+        <View
+            android:id="@+id/pull"
+            android:layout_width="60dp"
+            android:layout_height="2dp"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="即時盤點結果"
+            android:textColor="@color/Teal_Green"
+            android:textSize="13dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pull" />
+
+        <TextView
+            android:id="@+id/barcode"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:gravity="start"
+            android:text="盤點碼"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/header" />
+
+        <TextView
+            android:id="@+id/itemName"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:gravity="start"
+            android:text="名稱"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@id/barcode"
+            app:layout_constraintTop_toBottomOf="@id/header" />
+
+        <TextView
+            android:id="@+id/number"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:gravity="start"
+            android:text="數量"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@id/itemName"
+            app:layout_constraintTop_toBottomOf="@id/header" />
+
+        <TextView
+            android:id="@+id/uploadTime"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:gravity="start"
+            android:text="建置日期"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@id/number"
+            app:layout_constraintTop_toBottomOf="@id/header" />
+
+        <TextView
+            android:id="@+id/remarks"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:gravity="start"
+            android:text="備註"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/uploadTime"
+            app:layout_constraintTop_toBottomOf="@id/header" />
+
+
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="0dp"
+            app:layout_constrainedHeight="true"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/barcode">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_t22_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:scrollbars="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/barcode"
+                tools:listitem="@layout/item_post_t22" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="@color/Teal_Green"
+    app:layout_constraintBottom_toBottomOf="parent">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:background="@android:color/transparent"
+        android:text="暫時離開盤點"
+        android:textColor="#FFFFFF"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="30dp"
+        android:background="@android:color/transparent"
+        android:text="完成盤點"
+        android:textColor="#FFFFFF"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

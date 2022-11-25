@@ -188,9 +188,6 @@ public class NewPostFragment extends BaseFragment {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 resized.compress(Bitmap.CompressFormat.JPEG, 50, baos);
                 byte[] imageByte = baos.toByteArray();
-
-
-
                 StorageReference fileReference = mStorageRef.child(fileName);
                 mUploadTask = fileReference.putBytes(imageByte);
             }catch (IOException e){

@@ -24,6 +24,7 @@ public class HomeT22Fragment extends BaseFragment {
     public static String proLocation;
     private FragmentHomeT22Binding binding;
     Context context;
+    Boolean fieldName = true;
 
     public HomeT22Fragment() {
         // Required empty public constructor
@@ -36,6 +37,8 @@ public class HomeT22Fragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         context = getContext();
         proLocation = requireArguments().getString("location");
+        fieldName = requireArguments().getBoolean("fieldName");
+//        Toast.makeText(getContext(),String.valueOf(fieldName),Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -49,14 +52,30 @@ public class HomeT22Fragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        binding.btnNewInventory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putString("location", proLocation);
+                NavHostFragment.findNavController(HomeT22Fragment.this)
+                        .navigate(R.id.action_HomeT22Fragment_to_NewInventoryFragment,args);
+            }
+        });
         binding.btnStartInventory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Bundle args = new Bundle();
                 args.putString("location", proLocation);
-                NavHostFragment.findNavController(HomeT22Fragment.this)
-                        .navigate(R.id.action_HomeT22Fragment_to_InventoryFragment,args);
+                if(fieldName){
+                    NavHostFragment.findNavController(HomeT22Fragment.this)
+                            .navigate(R.id.action_HomeT22Fragment_to_InventoryFragment,args);
+                }
+                else{
+                    NavHostFragment.findNavController(HomeT22Fragment.this)
+                            .navigate(R.id.action_HomeT22Fragment_to_InventoryNoNameFragment,args);
+                }
             }
         });
 
@@ -65,10 +84,8 @@ public class HomeT22Fragment extends BaseFragment {
             public void onClick(View v) {
                 Bundle args = new Bundle();
                 args.putString("location", proLocation);
-                boolean hideFAB = true;
-                args.putBoolean("hideFAB", hideFAB);
                 NavHostFragment.findNavController(HomeT22Fragment.this)
-                        .navigate(R.id.action_HomeT22Fragment_to_MainFragment,args);
+                        .navigate(R.id.action_HomeT22Fragment_to_PostResultFragment,args);
             }
         });
     }

@@ -1,10 +1,6 @@
 package com.chhsiao.firebase.quickstart.database.java;
 
-import static android.app.Activity.RESULT_OK;
-
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -12,15 +8,11 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,6 +41,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.quickstart.database.R;
+
+import com.google.firebase.quickstart.database.databinding.FragmentInventoryNoNameBinding;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
@@ -56,22 +50,16 @@ import com.google.firebase.storage.UploadTask;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 import com.squareup.picasso.Picasso;
-import com.google.firebase.quickstart.database.databinding.FragmentInventoryBinding;
-import com.journeyapps.barcodescanner.ScanContract;
-import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * create an instance of this fragment.
- */
-public class InventoryFragment extends BaseFragment {
+
+public class InventoryNoNameFragment extends BaseFragment {
+
     private static final String REQUIRED = "Required";
     private static final String TAG = "InventoryFragment";
     public static String proLocation;
@@ -80,14 +68,15 @@ public class InventoryFragment extends BaseFragment {
     ScanOptions options = new ScanOptions();
     private Bitmap mImageBitmap;
     private StorageTask mUploadTask;
-    public InventoryFragment() {
+
+    public InventoryNoNameFragment() {
         // Required empty public constructor
     }
     // [START define_database_reference]
     private DatabaseReference mDatabase;
     // [END define_database_reference]
     private StorageReference mStorageRef;
-    private FragmentInventoryBinding binding;
+    private FragmentInventoryNoNameBinding binding;
     private FirebaseRecyclerAdapter<Post, PostT22ViewHolder> mAdapter;
     private RecyclerView mRecycler;
     private LinearLayoutManager mManager;
@@ -97,8 +86,7 @@ public class InventoryFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         proLocation = requireArguments().getString("location");
-        fieldName = requireArguments().getBoolean("fieldName");
-        if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)!=PackageManager.PERMISSION_GRANTED){
+        if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.CAMERA},PICK_CAMERA_REQUEST);
         }
     }
@@ -106,9 +94,8 @@ public class InventoryFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentInventoryBinding.inflate(inflater, container, false);
-
-
+        // Inflate the layout for this fragment
+        binding = FragmentInventoryNoNameBinding.inflate(inflater, container, false);
         proLocation = requireArguments().getString("location");
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -116,6 +103,7 @@ public class InventoryFragment extends BaseFragment {
         mRecycler.setHasFixedSize(true);
         // Inflate the layout for this fragment
         return binding.getRoot();
+
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -171,8 +159,8 @@ public class InventoryFragment extends BaseFragment {
 
         FirebaseRecyclerOptions<Post> options =
                 new FirebaseRecyclerOptions.Builder<Post>()
-                .setQuery(query, Post.class)
-                .build();
+                        .setQuery(query, Post.class)
+                        .build();
         mAdapter = new FirebaseRecyclerAdapter<Post, PostT22ViewHolder>(options) {
             @Override
             public PostT22ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
@@ -288,7 +276,7 @@ public class InventoryFragment extends BaseFragment {
     private void submitPost() {
         final String barcode = binding.textInputLayoutBarcode.getEditText().getText().toString();
         final String number = binding.textInputLayoutNumber.getEditText().getText().toString();
-        final String name = binding.textInputLayoutName.getEditText().getText().toString();
+
         //Title is required
         if (TextUtils.isEmpty(barcode)) {
 //            binding.fieldNumber.setError(REQUIRED);
@@ -300,11 +288,7 @@ public class InventoryFragment extends BaseFragment {
             binding.textInputLayoutNumber.setError(REQUIRED);
             return;
         }
-        if (TextUtils.isEmpty(name)) {
-//            binding.fieldNumber.setError(REQUIRED);
-            binding.textInputLayoutName.setError(REQUIRED);
-            return;
-        }
+
 
 
         String FileName = "null";
@@ -319,7 +303,7 @@ public class InventoryFragment extends BaseFragment {
         // Disable button so there are no multi-posts
         binding.textInputLayoutBarcode.setEnabled(false);
         binding.textInputLayoutNumber.setEnabled(false);
-        binding.textInputLayoutName.setEnabled(false);
+
 
         Toast.makeText(getContext(), "Posting...", Toast.LENGTH_SHORT).show();
 
@@ -339,13 +323,13 @@ public class InventoryFragment extends BaseFragment {
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             // Write new post
-                            writeNewPost(userId, user.username, name, barcode, number, proLocation, null, uploadFileName);
+                            writeNewPost(userId, user.username, null, barcode, number, proLocation, null, uploadFileName);
 //                            writeNewPost(userId, user.username, location, number, count, format, remarks, barcode, snumber, unit, name, uploadFileName);
                         }
 
                         binding.textInputLayoutBarcode.setEnabled(true);
                         binding.textInputLayoutNumber.setEnabled(true);
-                        binding.textInputLayoutName.setEnabled(true);
+
                     }
 
                     @Override
@@ -353,7 +337,7 @@ public class InventoryFragment extends BaseFragment {
                         Log.w(TAG, "getUser:onCancelled", databaseError.toException());
                         binding.textInputLayoutBarcode.setEnabled(true);
                         binding.textInputLayoutNumber.setEnabled(true);
-                        binding.textInputLayoutName.setEnabled(true);
+
 
                     }
                 });
@@ -390,6 +374,5 @@ public class InventoryFragment extends BaseFragment {
         }
         return fileName;
     }
-
 
 }

@@ -56,19 +56,36 @@
         app:layout_constraintTop_toBottomOf="@+id/imageViewItem" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayoutBarcode"
+        android:id="@+id/textInputLayoutName"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="330dp"
+        android:layout_width="165dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:background="@color/Cultured"
-        android:hint="盤點碼"
+        android:hint="名稱"
         android:textColorHint="@color/Teal_Green"
         app:endIconMode="clear_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/textInputLayoutBarcode"
         app:layout_constraintTop_toBottomOf="@+id/btnScanBarcode">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="10" />
+    </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutNumber"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="165dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="@color/Cultured"
+        android:hint="數量"
+        android:textColorHint="@color/Teal_Green"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="@+id/textInputLayoutBarcode"
+        app:layout_constraintTop_toBottomOf="@+id/btnScanBarcode">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/textbarcode"
             android:layout_width="match_parent"
@@ -77,19 +94,19 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayoutNumber"
+        android:id="@+id/textInputLayoutBarcode"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="330dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:background="@color/Cultured"
-        android:hint="數量"
+        android:hint="盤點碼"
         android:maxLines="1"
         android:textColorHint="@color/Teal_Green"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutBarcode">
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutName">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
@@ -108,8 +125,8 @@
         android:text="確定"
         android:textColor="#FFFFFF"
         android:textSize="14dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutNumber"
-        app:layout_constraintEnd_toEndOf="@+id/textInputLayoutNumber" />
+        app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutBarcode"
+        app:layout_constraintEnd_toEndOf="@+id/textInputLayoutBarcode" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
