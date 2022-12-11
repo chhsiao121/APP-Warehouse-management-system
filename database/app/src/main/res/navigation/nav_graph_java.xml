@@ -19,6 +19,10 @@
             android:id="@+id/action_SignInFragment_to_LocationFragment"
             app:popUpTo="@id/LocationFragment"
             app:destination="@id/LocationFragment" />
+        <action
+            android:id="@+id/action_SignInFragment_to_InventoryModeFragment"
+            app:popUpTo="@id/InventoryModeFragment"
+            app:destination="@id/InventoryModeFragment" />
     </fragment>
     <fragment
         android:id="@+id/MainFragment"
@@ -111,6 +115,22 @@
             app:popUpTo="@id/InventoryFragment">
             <argument android:name="location" app:nullable="false" app:argType="string" android:defaultValue=""/>
         </action>
+        <action
+            android:id="@+id/action_LocationFragment_to_InventoryModeFragment"
+            app:destination="@id/InventoryModeFragment"
+            app:popUpTo="@id/InventoryModeFragment">
+        </action>
+
+    </fragment>
+    <fragment
+        android:id="@+id/InventoryModeFragment"
+        android:name="com.chhsiao.firebase.quickstart.database.java.InventoryModeFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_inventory_mode">
+        <action
+            android:id="@+id/action_InventoryModeFragment_to_LocationFragment"
+            app:popUpTo="@id/LocationFragment"
+            app:destination="@id/LocationFragment" />
     </fragment>
 
     <fragment

@@ -143,6 +143,7 @@ public class LocationFragment extends BaseFragment {
             }
         });
 
+
         binding.fabgo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
