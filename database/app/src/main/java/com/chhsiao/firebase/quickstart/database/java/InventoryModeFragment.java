@@ -47,9 +47,11 @@ public class InventoryModeFragment extends BaseFragment {
             public void onClick(View v) {
                 String id = binding.mode1ID.getText().toString();
                 String name = binding.mode1Name.getText().toString();
+                String mode = "1";
                 Bundle args = new Bundle();
                 args.putString("id", id);
                 args.putString("name", name);
+                args.putString("mode",mode);
                 NavHostFragment.findNavController(InventoryModeFragment.this)
                         .navigate(R.id.action_InventoryModeFragment_to_InventoryTaskFragment,args);
             }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:background="@drawable/ripple_border"
+    android:orientation="horizontal"
+    tools:viewBindingIgnore="true">
+    <TextView
+        android:id="@+id/locationID"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_weight="5"
+        android:text="AA001"
+        android:paddingLeft="5dp"
+        android:textColor="@color/font_black"
+        android:textStyle="bold"
+        android:gravity="center_vertical|start"
+        android:textSize="16sp" />
+    <TextView
+        android:id="@+id/locationName"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:paddingLeft="5dp"
+        android:layout_weight="6"
+        android:textColor="@color/font_black"
+        android:textStyle="bold"
+        android:gravity="center_vertical|start"
+        android:text="主倉庫"
+        android:textSize="16sp" />
+    <TextView
+        android:id="@+id/locationTime"
+        android:layout_width="0dp"
+        android:textColor="@color/font_black"
+        android:textStyle="bold"
+        android:layout_height="50dp"
+        android:paddingLeft="5dp"
+        android:layout_weight="9"
+        android:gravity="center_vertical|start"
+        android:text="2022/12/16 23:30"
+        android:textSize="16sp" />
+
+
+</LinearLayout>

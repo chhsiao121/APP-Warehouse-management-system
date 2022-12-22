@@ -10,9 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
 import android.text.TextUtils;
@@ -26,8 +24,10 @@ import android.widget.Toast;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.quickstart.database.R;
-import com.google.firebase.quickstart.database.databinding.FragmentInventoryTaskBinding;
+import com.google.firebase.quickstart.database.databinding.FragmentInventoryLocationBinding;
 import com.google.common.io.ByteStreams;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,18 +45,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class InventoryTaskFragment extends BaseFragment {
+
+public class InventoryLocationFragment extends BaseFragment {
+
     private static final String REQUIRED = "Required";
     Context context;
-    FragmentInventoryTaskBinding binding;
-    RecyclerView mRecyclerView;
+    FragmentInventoryLocationBinding binding;
     MyListAdapter myListAdapter;
+    RecyclerView mRecyclerView;
     LinearLayoutManager mManager;
     private JSONObject jsonData;
     private String mode;
+    private String taskID;
     ArrayList<HashMap<String,String>> arrayList = new ArrayList<>();
     String json_name;
-    public InventoryTaskFragment() {
+    public InventoryLocationFragment() {
         // Required empty public constructor
     }
 
@@ -64,9 +67,8 @@ public class InventoryTaskFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
-
         jsonData = new JSONObject();
-        json_name = getTaskJson();
+        json_name = getLocationJson();
         checkJsonFile(json_name);
         Iterator<String> keys = jsonData.keys();
         while(keys.hasNext()) {
@@ -75,8 +77,9 @@ public class InventoryTaskFragment extends BaseFragment {
                 JSONObject currentDynamicValue = jsonData.getJSONObject(currentDynamicKey);
                 HashMap<String,String> hashMap = new HashMap<>();
                 hashMap.put("id", (String) currentDynamicValue.get("id"));
-                hashMap.put("time", (String) currentDynamicValue.get("time"));
                 hashMap.put("name", (String) currentDynamicValue.get("name"));
+                hashMap.put("time", (String) currentDynamicValue.get("time"));
+
                 arrayList.add(hashMap);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -85,22 +88,21 @@ public class InventoryTaskFragment extends BaseFragment {
         }
     }
     private class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder>{
-
         class ViewHolder extends RecyclerView.ViewHolder{
-            private TextView id,time,name;
+            private TextView id,name,time;
             private View mView;
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 id = itemView.findViewById(R.id.locationID);
-                name = itemView.findViewById(R.id.locationTime);
-                time = itemView.findViewById(R.id.locationName);
+                name = itemView.findViewById(R.id.locationName);
+                time = itemView.findViewById(R.id.locationTime);
                 mView = itemView;
             }
         }
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task,parent,false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_location,parent,false);
             return new ViewHolder(view);
         }
 
@@ -111,12 +113,7 @@ public class InventoryTaskFragment extends BaseFragment {
             holder.time.setText(arrayList.get(position).get("time"));
             holder.mView.setOnClickListener((v)->{
 //                Toast.makeText(context,holder.name.getText(),Toast.LENGTH_SHORT).show();
-                Toast.makeText(context,String.valueOf(position),Toast.LENGTH_SHORT).show();
-                Bundle args = new Bundle();
-                args.putString("task_id", holder.id.getText().toString());
-                args.putString("mode",mode);
-                NavHostFragment.findNavController(InventoryTaskFragment.this)
-                        .navigate(R.id.action_InventoryTaskFragment_to_InventoryLocationFragment,args);
+                Toast.makeText(context,"mode:"+mode+"\n"+"taskID:"+taskID+"\n",Toast.LENGTH_SHORT).show();
             });
         }
 
@@ -125,33 +122,27 @@ public class InventoryTaskFragment extends BaseFragment {
             return arrayList.size();
         }
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mode = requireArguments().getString("mode");
-        // Inflate the layout for this fragment
-        binding = FragmentInventoryTaskBinding.inflate(inflater, container, false);
+        taskID = requireArguments().getString("task_id");
+        binding = FragmentInventoryLocationBinding.inflate(inflater, container, false);
         //設置RecycleView
         mManager = new LinearLayoutManager(context);
-//        mManager.setReverseLayout(true);
-//        mManager.setStackFromEnd(true);
-        binding.recyclerviewTask.setLayoutManager(mManager);
-
-//        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        binding.recyclerviewLocation.setLayoutManager(mManager);
         myListAdapter = new MyListAdapter();
-        binding.recyclerviewTask.setAdapter(myListAdapter);
+        binding.recyclerviewLocation.setAdapter(myListAdapter);
         return binding.getRoot();
     }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        binding.btnNewTask.setOnClickListener(new View.OnClickListener() {
+        binding.btnNewLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context,R.style.BottomSheetDialog);
-                View view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_task,null);
+                View view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_location,null);
                 TextInputLayout textID = view.findViewById(R.id.textInputLayoutID);
                 TextInputLayout textName = view.findViewById(R.id.textInputLayoutName);
                 TextInputLayout textTime = view.findViewById(R.id.textInputLayoutTime);
@@ -186,9 +177,9 @@ public class InventoryTaskFragment extends BaseFragment {
                             hashMap.put("time",strTime);
                             hashMap.put("name",strName);
                             arrayList.add(hashMap);
-                            JSONObject jsonObjectNewTask = new JSONObject(hashMap);
+                            JSONObject jsonObjectNewLocation = new JSONObject(hashMap);
                             try {
-                                jsonData.put(strID,jsonObjectNewTask);
+                                jsonData.put(strID,jsonObjectNewLocation);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -204,15 +195,11 @@ public class InventoryTaskFragment extends BaseFragment {
         });
         binding.refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
         binding.refreshLayout.setOnRefreshListener(()->{
-//            arrayList.clear();
-//            makeData();
             myListAdapter.notifyDataSetChanged();
             binding.refreshLayout.setRefreshing(false);
 
         });
     }
-
-
     private void checkJsonFile(String target_name){//1.建立json檔(如果json檔不存在)
         int READ_EXTERNAL_STORAGE = 100;
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)

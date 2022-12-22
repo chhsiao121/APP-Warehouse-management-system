@@ -84,6 +84,12 @@ public class  MainActivity extends AppCompatActivity {
                         setSupportActionBar(binding.toolbar);
                     }
                 }
+                if(destination.getId() == R.id.InventoryLocationFragment){
+                    binding.toolbar.setTitle("盤點位置");
+                    binding.toolbar.setSubtitle(null);
+                    setSupportActionBar(binding.toolbar);
+                }
+
             }
         });
     }

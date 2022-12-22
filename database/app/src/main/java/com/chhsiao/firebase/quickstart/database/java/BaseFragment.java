@@ -9,7 +9,8 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class BaseFragment extends Fragment {
     private ProgressBar mProgressBar;
-
+    private final String taskJson ="inventory_task.json";
+    private final String locationJson ="inventory_location.json";
     public void setProgressBar(int resId) {
         mProgressBar = getView().findViewById(resId);
     }
@@ -29,4 +30,6 @@ public class BaseFragment extends Fragment {
     public String getUid() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
+    public String getTaskJson(){return taskJson;}
+    public String getLocationJson(){return locationJson;}
 }
