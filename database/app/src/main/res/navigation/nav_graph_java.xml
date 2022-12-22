@@ -131,6 +131,21 @@
             android:id="@+id/action_InventoryModeFragment_to_LocationFragment"
             app:popUpTo="@id/LocationFragment"
             app:destination="@id/LocationFragment" />
+        <action
+            android:id="@+id/action_InventoryModeFragment_to_InventoryTaskFragment"
+            app:popUpTo="@id/InventoryTaskFragment"
+            app:destination="@id/InventoryTaskFragment">
+            <argument android:name="id" app:nullable="true" app:argType="string" android:defaultValue=""/>
+            <argument android:name="name" app:nullable="true" app:argType="string" android:defaultValue=""/>
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/InventoryTaskFragment"
+        android:name="com.chhsiao.firebase.quickstart.database.java.InventoryTaskFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_inventory_task">
+
     </fragment>
 
     <fragment

@@ -5,12 +5,12 @@ apply from: "${rootDir}/gradle/build-script.gradle"
 check.dependsOn 'assembleDebugAndroidTest'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "com.chhsiao.firebase.quickstart.database"
-        minSdkVersion 19
-        targetSdkVersion 30
+        minSdkVersion 22
+        targetSdkVersion 31
         versionCode getVersionCodeTimeStamps()
         versionName "1.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -37,7 +37,7 @@ android {
 dependencies {
     implementation project(":internal:lintchecks")
     implementation project(":internal:chooserx")
-
+    implementation 'com.google.guava:guava:31.1-jre'
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'com.google.android.material:material:1.4.0'

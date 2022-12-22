@@ -45,8 +45,13 @@ public class InventoryModeFragment extends BaseFragment {
         binding.btnMode1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String id = binding.mode1ID.getText().toString();
+                String name = binding.mode1Name.getText().toString();
+                Bundle args = new Bundle();
+                args.putString("id", id);
+                args.putString("name", name);
                 NavHostFragment.findNavController(InventoryModeFragment.this)
-                        .navigate(R.id.action_InventoryModeFragment_to_LocationFragment);
+                        .navigate(R.id.action_InventoryModeFragment_to_InventoryTaskFragment,args);
             }
         });
         binding.btnMode2.setOnClickListener(new View.OnClickListener() {

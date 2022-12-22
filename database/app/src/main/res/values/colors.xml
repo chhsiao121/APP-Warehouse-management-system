@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#039BE5</color>
-    <color name="colorPrimaryDark">#0288D1</color>
-    <color name="colorPrimaryLight">#63ccff</color>
+<!--    <color name="colorPrimary">#039BE5</color>-->
+    <color name="colorPrimary">#128477</color>
+
+<!--    <color name="colorPrimaryDark">#0288D1</color>-->
+    <color name="colorPrimaryDark">#00564b</color>
+    <color name="colorPrimaryLight">#51b4a6</color>
     <color name="colorAccent">#FFA000</color>
 
 
@@ -24,5 +27,7 @@
     <color name="material_cyan_200">#80DEEA</color>
     <color name="Teal_Green">#128477</color>
     <color name="Cultured">#F4F4F4</color>
+    <color name="border_gray">#707070</color>
+    <color name="font_black">#575757</color>
 
 </resources>

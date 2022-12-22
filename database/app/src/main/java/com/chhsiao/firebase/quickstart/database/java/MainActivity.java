@@ -71,7 +71,19 @@ public class  MainActivity extends AppCompatActivity {
                 } else {
                     fab.setVisibility(View.GONE);
                 }
-
+                if(destination.getId() == R.id.InventoryModeFragment){
+                    binding.toolbar.setTitle("專案");
+                    setSupportActionBar(binding.toolbar);
+                }
+                if(destination.getId() == R.id.InventoryTaskFragment){
+                    if (arguments != null && arguments.containsKey("name") && arguments.containsKey("id")) {
+                        String name = arguments.getString("name");
+                        String id = arguments.getString("id");
+                        binding.toolbar.setTitle(name);
+                        binding.toolbar.setSubtitle(id);
+                        setSupportActionBar(binding.toolbar);
+                    }
+                }
             }
         });
     }

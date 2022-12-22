@@ -1,0 +1,71 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.chhsiao.firebase.quickstart.database.java.InventoryTaskFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/textTask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="任務清單"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/font_black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"/>
+
+    <TextView
+        android:id="@+id/textRemark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="備註: 盤點數量+拍照"
+        android:textSize="12sp"
+        android:textColor="@color/font_black"
+        app:layout_constraintTop_toBottomOf="@+id/textTask"
+        app:layout_constraintStart_toStartOf="@id/textTask"
+        android:layout_marginTop="4dp"/>
+
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnNewTask"
+        android:layout_width="116dp"
+        android:layout_height="34dp"
+        android:background="@drawable/custom_button"
+        android:stateListAnimator="@null"
+        android:text="建立新任務"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnNewTask"
+        app:layout_constraintTop_toBottomOf="@+id/textRemark"
+        android:id="@+id/refreshLayout">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerviewTask"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/item_task"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
