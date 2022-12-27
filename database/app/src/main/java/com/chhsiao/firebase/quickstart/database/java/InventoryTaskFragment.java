@@ -54,6 +54,7 @@ public class InventoryTaskFragment extends BaseFragment {
     LinearLayoutManager mManager;
     private JSONObject jsonData;
     private String mode;
+    public static String taskId;
     ArrayList<HashMap<String,String>> arrayList = new ArrayList<>();
     String json_name;
     public InventoryTaskFragment() {
@@ -113,7 +114,8 @@ public class InventoryTaskFragment extends BaseFragment {
 //                Toast.makeText(context,holder.name.getText(),Toast.LENGTH_SHORT).show();
                 Toast.makeText(context,String.valueOf(position),Toast.LENGTH_SHORT).show();
                 Bundle args = new Bundle();
-                args.putString("task_id", holder.id.getText().toString());
+                taskId = holder.id.getText().toString();
+                args.putString("task_id",taskId);
                 args.putString("mode",mode);
                 NavHostFragment.findNavController(InventoryTaskFragment.this)
                         .navigate(R.id.action_InventoryTaskFragment_to_InventoryLocationFragment,args);

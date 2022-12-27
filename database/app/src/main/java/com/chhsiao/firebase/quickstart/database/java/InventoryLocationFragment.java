@@ -26,6 +26,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.quickstart.database.R;
 import com.google.firebase.quickstart.database.databinding.FragmentInventoryLocationBinding;
 import com.google.common.io.ByteStreams;
+
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import org.json.JSONException;
@@ -56,7 +58,8 @@ public class InventoryLocationFragment extends BaseFragment {
     LinearLayoutManager mManager;
     private JSONObject jsonData;
     private String mode;
-    private String taskID;
+    private String taskId;
+    public static String locationId;
     ArrayList<HashMap<String,String>> arrayList = new ArrayList<>();
     String json_name;
     public InventoryLocationFragment() {
@@ -87,46 +90,14 @@ public class InventoryLocationFragment extends BaseFragment {
 
         }
     }
-    private class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder>{
-        class ViewHolder extends RecyclerView.ViewHolder{
-            private TextView id,name,time;
-            private View mView;
-            public ViewHolder(@NonNull View itemView) {
-                super(itemView);
-                id = itemView.findViewById(R.id.locationID);
-                name = itemView.findViewById(R.id.locationName);
-                time = itemView.findViewById(R.id.locationTime);
-                mView = itemView;
-            }
-        }
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_location,parent,false);
-            return new ViewHolder(view);
-        }
 
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            holder.id.setText(arrayList.get(position).get("id"));
-            holder.name.setText(arrayList.get(position).get("name"));
-            holder.time.setText(arrayList.get(position).get("time"));
-            holder.mView.setOnClickListener((v)->{
-//                Toast.makeText(context,holder.name.getText(),Toast.LENGTH_SHORT).show();
-                Toast.makeText(context,"mode:"+mode+"\n"+"taskID:"+taskID+"\n",Toast.LENGTH_SHORT).show();
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return arrayList.size();
-        }
-    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mode = requireArguments().getString("mode");
-        taskID = requireArguments().getString("task_id");
+//        mode = requireArguments().getString("mode");
+//        taskID = requireArguments().getString("task_id");
+        mode = InventoryModeFragment.mode;
+        taskId = InventoryTaskFragment.taskId;
         binding = FragmentInventoryLocationBinding.inflate(inflater, container, false);
         //設置RecycleView
         mManager = new LinearLayoutManager(context);
@@ -267,6 +238,48 @@ public class InventoryLocationFragment extends BaseFragment {
             Toast.makeText(context.getApplicationContext(), "新增保存成功", Toast.LENGTH_LONG).show();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    private class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder>{
+        class ViewHolder extends RecyclerView.ViewHolder{
+            private TextView id,name,time;
+            private View mView;
+            public ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                id = itemView.findViewById(R.id.locationID);
+                name = itemView.findViewById(R.id.locationName);
+                time = itemView.findViewById(R.id.locationTime);
+                mView = itemView;
+            }
+        }
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_location,parent,false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            holder.id.setText(arrayList.get(position).get("id"));
+            holder.name.setText(arrayList.get(position).get("name"));
+            holder.time.setText(arrayList.get(position).get("time"));
+            holder.mView.setOnClickListener((v)->{
+//                Toast.makeText(context,holder.name.getText(),Toast.LENGTH_SHORT).show();
+                locationId = holder.id.getText().toString();
+//                Toast.makeText(context,"mode:"+mode+"\n"+"taskID:"+taskId+"\n",Toast.LENGTH_SHORT).show();
+                Bundle args = new Bundle();
+                String name =holder.name.getText().toString();
+                args.putString("name",name);
+                NavHostFragment.findNavController(InventoryLocationFragment.this)
+                        .navigate(R.id.action_InventoryLocationFragment_to_InventoryMode1Fragment,args);
+
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return arrayList.size();
         }
     }
 }

@@ -3,89 +3,62 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.chhsiao.firebase.quickstart.database.java.InventoryFragment">
+    tools:context="com.chhsiao.firebase.quickstart.database.java.InventoryMode1Fragment">
 
     <include
         android:id="@+id/T22AuthorLayout"
         layout="@layout/include_t22_author"
         android:layout_width="329dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/imageViewItem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:maxWidth="329dp"
-        android:maxHeight="329dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/group"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/T22AuthorLayout" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnScanBarcode"
-        android:layout_width="116dp"
-        android:layout_height="34dp"
-        android:background="@drawable/custom_button"
-        android:stateListAnimator="@null"
-        android:text="掃條碼"
-        android:textColor="#FFFFFF"
-        android:textSize="14dp"
-        app:layout_constraintEnd_toStartOf="@+id/btnPhotograph"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageViewItem" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnPhotograph"
-        android:layout_width="116dp"
-        android:layout_height="34dp"
-        android:background="@drawable/photograph_custom_button"
-        android:stateListAnimator="@null"
-        android:text="拍照"
-        android:textColor="#FFFFFF"
-        android:textSize="14dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/btnScanBarcode"
-        app:layout_constraintTop_toBottomOf="@+id/imageViewItem" />
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutName"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="165dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+        android:layout_width="329dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:background="@color/Cultured"
         android:hint="名稱"
-        android:textColorHint="@color/Teal_Green"
+        android:textColorHint="@color/colorPrimary"
+        app:boxCornerRadiusBottomEnd="8dp"
+        app:boxCornerRadiusBottomStart="8dp"
+        app:boxCornerRadiusTopEnd="8dp"
+        app:boxCornerRadiusTopStart="8dp"
         app:endIconMode="clear_text"
-        app:layout_constraintStart_toStartOf="@+id/textInputLayoutBarcode"
-        app:layout_constraintTop_toBottomOf="@+id/btnScanBarcode">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/T22AuthorLayout"
+        >
+
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/textname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLength="10" />
+            android:maxLength="12" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutNumber"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="165dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:background="@color/Cultured"
         android:hint="數量"
-        android:textColorHint="@color/Teal_Green"
+        android:textColorHint="@color/colorPrimary"
+        app:boxCornerRadiusBottomEnd="8dp"
+        app:boxCornerRadiusBottomStart="8dp"
+        app:boxCornerRadiusTopEnd="8dp"
+        app:boxCornerRadiusTopStart="8dp"
         app:endIconMode="clear_text"
-        app:layout_constraintEnd_toEndOf="@+id/textInputLayoutBarcode"
-        app:layout_constraintTop_toBottomOf="@+id/btnScanBarcode">
+        app:layout_constraintEnd_toStartOf="@+id/scannerNumber"
+        app:layout_constraintStart_toStartOf="@+id/textInputLayoutName"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutName">
+
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/textnumber"
             android:layout_width="match_parent"
@@ -95,23 +68,145 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutBarcode"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="330dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="12dp"
         android:background="@color/Cultured"
         android:hint="盤點碼"
         android:maxLines="1"
-        android:textColorHint="@color/Teal_Green"
+        android:textColorHint="@color/colorPrimary"
+        app:boxCornerRadiusBottomEnd="8dp"
+        app:boxCornerRadiusBottomStart="8dp"
+        app:boxCornerRadiusTopEnd="8dp"
+        app:boxCornerRadiusTopStart="8dp"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toStartOf="@+id/scannerBarcode"
+        app:layout_constraintStart_toStartOf="@+id/textInputLayoutNumber"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutNumber">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textbarcode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="20" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/scannerNumber"
+        android:layout_width="60dp"
+        android:layout_height="0dp"
+        android:background="@drawable/custom_button"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_baseline_qr_code_scanner_30"
+        app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutNumber"
+        app:layout_constraintEnd_toEndOf="@+id/textInputLayoutName"
+        app:layout_constraintTop_toTopOf="@+id/textInputLayoutNumber" />
+
+    <ImageButton
+        android:id="@+id/scannerBarcode"
+        android:layout_width="60dp"
+        android:layout_height="0dp"
+        android:background="@drawable/custom_button"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_baseline_qr_code_scanner_30"
+        app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutBarcode"
+        app:layout_constraintEnd_toEndOf="@+id/textInputLayoutName"
+        app:layout_constraintTop_toTopOf="@+id/textInputLayoutBarcode" />
+
+    <ImageButton
+        android:id="@+id/btnPhotograph1"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:background="@drawable/camera_button"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_baseline_camera_alt_30"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toStartOf="@+id/btnPhotograph2"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="@id/textInputLayoutBarcode"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutBarcode" />
+
+    <ImageButton
+        android:id="@+id/btnPhotograph2"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:background="@drawable/camera_button"
+        android:scaleType="centerInside"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/ic_baseline_camera_alt_30"
+        app:layout_constraintEnd_toStartOf="@+id/btnPhotograph3"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btnPhotograph1"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutBarcode" />
+
+    <ImageButton
+        android:id="@+id/btnPhotograph3"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:background="@drawable/camera_button"
+        android:scaleType="centerInside"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="5dp"
+        android:src="@drawable/ic_baseline_camera_alt_30"
+        app:layout_constraintEnd_toEndOf="@+id/scannerBarcode"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btnPhotograph2"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutBarcode" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutState"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+        android:layout_width="329dp"
+        android:layout_height="wrap_content"
+
+        android:textColorHint="@color/colorPrimary"
+        app:boxCornerRadiusBottomEnd="8dp"
+        app:boxCornerRadiusBottomStart="8dp"
+        app:boxCornerRadiusTopEnd="8dp"
+        app:boxCornerRadiusTopStart="8dp"
+        android:layout_marginTop="8dp"
+        android:hint="狀態"
+        app:helperText="請下拉選擇"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnPhotograph1">
+        <AutoCompleteTextView
+            android:id="@+id/Item_state_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutRemark"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="329dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="備註"
+        app:boxCornerRadiusBottomEnd="8dp"
+        app:boxCornerRadiusBottomStart="8dp"
+        app:boxCornerRadiusTopEnd="8dp"
+        app:boxCornerRadiusTopStart="8dp"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutName">
-
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutState">
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textRemark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLength="10" />
+            android:inputType="textMultiLine"
+            android:lines="3"
+            android:gravity="top"
+            android:scrollbars="vertical"
+            android:overScrollMode="always"
+            android:scrollbarStyle="insideInset"
+            android:scrollHorizontally="false"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.AppCompatButton
@@ -125,8 +220,10 @@
         android:text="確定"
         android:textColor="#FFFFFF"
         android:textSize="14dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutBarcode"
-        app:layout_constraintEnd_toEndOf="@+id/textInputLayoutBarcode" />
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutRemark"/>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -141,7 +238,7 @@
             android:layout_height="600dp"
             android:background="#FFFFFF"
             app:behavior_hideable="false"
-            app:behavior_peekHeight="80dp"
+            app:behavior_peekHeight="50dp"
             app:layout_anchorGravity="bottom"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout">
@@ -224,8 +321,6 @@
                 app:layout_constraintStart_toEndOf="@id/uploadTime"
                 app:layout_constraintTop_toBottomOf="@id/header" />
 
-
-
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/refresh_layout"
                 android:layout_width="match_parent"
@@ -256,8 +351,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="@color/Teal_Green"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.appcompat.widget.AppCompatButton
@@ -287,6 +382,4 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
 </androidx.constraintlayout.widget.ConstraintLayout>
-

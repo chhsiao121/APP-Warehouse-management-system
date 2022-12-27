@@ -18,7 +18,7 @@ import com.google.firebase.quickstart.database.databinding.FragmentInventoryMode
 public class InventoryModeFragment extends BaseFragment {
 
     FragmentInventoryModeBinding binding;
-
+    public static String mode;
 
     public InventoryModeFragment() {
         // Required empty public constructor
@@ -47,7 +47,7 @@ public class InventoryModeFragment extends BaseFragment {
             public void onClick(View v) {
                 String id = binding.mode1ID.getText().toString();
                 String name = binding.mode1Name.getText().toString();
-                String mode = "1";
+                mode = id;
                 Bundle args = new Bundle();
                 args.putString("id", id);
                 args.putString("name", name);

@@ -161,6 +161,19 @@
         android:name="com.chhsiao.firebase.quickstart.database.java.InventoryLocationFragment"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_inventory_location">
+        <action
+            android:id="@+id/action_InventoryLocationFragment_to_InventoryMode1Fragment"
+            app:popUpTo="@id/InventoryMode1Fragment"
+            app:destination="@id/InventoryMode1Fragment">
+        </action>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/InventoryMode1Fragment"
+        android:name="com.chhsiao.firebase.quickstart.database.java.InventoryMode1Fragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_inventory_mode1">
 
     </fragment>
 

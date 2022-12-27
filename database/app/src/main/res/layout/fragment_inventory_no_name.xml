@@ -69,7 +69,7 @@ tools:context="com.chhsiao.firebase.quickstart.database.java.InventoryNoNameFrag
     app:layout_constraintEnd_toEndOf="@+id/textInputLayoutBarcode"
     app:layout_constraintTop_toBottomOf="@+id/btnScanBarcode">
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/textbarcode"
+        android:id="@+id/textnumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxLength="20" />

@@ -89,6 +89,13 @@ public class  MainActivity extends AppCompatActivity {
                     binding.toolbar.setSubtitle(null);
                     setSupportActionBar(binding.toolbar);
                 }
+                if(destination.getId() == R.id.InventoryMode1Fragment){
+                    if (arguments != null && arguments.containsKey("name")) {
+                        String name = arguments.getString("name");
+                        binding.toolbar.setTitle(name);
+                        setSupportActionBar(binding.toolbar);
+                    }
+                }
 
             }
         });
