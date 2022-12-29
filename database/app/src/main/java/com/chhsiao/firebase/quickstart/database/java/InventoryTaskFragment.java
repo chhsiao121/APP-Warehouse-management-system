@@ -112,7 +112,6 @@ public class InventoryTaskFragment extends BaseFragment {
             holder.time.setText(arrayList.get(position).get("time"));
             holder.mView.setOnClickListener((v)->{
 //                Toast.makeText(context,holder.name.getText(),Toast.LENGTH_SHORT).show();
-                Toast.makeText(context,String.valueOf(position),Toast.LENGTH_SHORT).show();
                 Bundle args = new Bundle();
                 taskId = holder.id.getText().toString();
                 args.putString("task_id",taskId);
@@ -174,6 +173,7 @@ public class InventoryTaskFragment extends BaseFragment {
                         final String strTime = textTime.getEditText().getText().toString();
                         if (TextUtils.isEmpty(strID)) {
                             textID.setError(REQUIRED);
+                            return;
                         }
                         if (TextUtils.isEmpty(strName)) {
                             textName.setError(REQUIRED);
@@ -181,25 +181,25 @@ public class InventoryTaskFragment extends BaseFragment {
                         }
                         if (TextUtils.isEmpty(strTime)) {
                             textTime.setError(REQUIRED);
+                            return;
                         }
-                        else{
-                            HashMap<String,String> hashMap = new HashMap<>();
-                            hashMap.put("id",strID);
-                            hashMap.put("time",strTime);
-                            hashMap.put("name",strName);
-                            arrayList.add(hashMap);
-                            JSONObject jsonObjectNewTask = new JSONObject(hashMap);
-                            try {
-                                jsonData.put(strID,jsonObjectNewTask);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            saveJson2File(json_name,jsonData);
-                            bottomSheetDialog.dismiss();
-//                            Toast.makeText(getContext(), "添加", Toast.LENGTH_SHORT).show();
-                            myListAdapter.notifyDataSetChanged();
 
+                        HashMap<String,String> hashMap = new HashMap<>();
+                        hashMap.put("id",strID);
+                        hashMap.put("time",strTime);
+                        hashMap.put("name",strName);
+                        arrayList.add(hashMap);
+                        JSONObject jsonObjectNewTask = new JSONObject(hashMap);
+                        try {
+                            jsonData.put(strID,jsonObjectNewTask);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
+                        saveJson2File(json_name,jsonData);
+                        bottomSheetDialog.dismiss();
+//                           Toast.makeText(getContext(), "添加", Toast.LENGTH_SHORT).show();
+                        myListAdapter.notifyDataSetChanged();
+
                     }
                 });
             }

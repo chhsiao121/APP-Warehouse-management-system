@@ -156,7 +156,6 @@ public class InventoryLocationFragment extends BaseFragment {
                             }
                             saveJson2File(json_name,jsonData);
                             bottomSheetDialog.dismiss();
-//                            Toast.makeText(getContext(), "添加", Toast.LENGTH_SHORT).show();
                             myListAdapter.notifyDataSetChanged();
 
                         }
