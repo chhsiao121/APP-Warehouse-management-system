@@ -1,12 +1,16 @@
 package com.chhsiao.firebase.quickstart.database.java;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -15,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,9 +36,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chhsiao.firebase.quickstart.database.java.capture.CaptureAct;
+import com.chhsiao.firebase.quickstart.database.java.models.Location;
+import com.chhsiao.firebase.quickstart.database.java.models.PostV2;
+import com.chhsiao.firebase.quickstart.database.java.models.T22;
+import com.chhsiao.firebase.quickstart.database.java.models.User;
+import com.chhsiao.firebase.quickstart.database.java.models.Task;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.io.ByteStreams;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.quickstart.database.R;
 import com.google.firebase.quickstart.database.databinding.FragmentInventoryMode1Binding;
 import com.google.firebase.storage.FirebaseStorage;
@@ -55,13 +70,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Objects;
+import java.util.Map;
 
 
 public class InventoryMode1Fragment extends BaseFragment {
@@ -75,7 +89,6 @@ public class InventoryMode1Fragment extends BaseFragment {
     private FragmentInventoryMode1Binding binding;
     ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
     private RecyclerView mRecycler;
-    private StorageReference mStorageRef;
     LinearLayoutManager mManager;
     private String scannType;
     private String modeId;
@@ -87,6 +100,8 @@ public class InventoryMode1Fragment extends BaseFragment {
     Context context;
     private int image123;
     String[] stateList = {"正常", "堪用", "破損", "待修", "建議報廢"};
+    private StorageReference mStorageRef;
+    private DatabaseReference mDatabase;
     private StorageTask mUploadTask;
 
     public InventoryMode1Fragment() {
@@ -139,9 +154,8 @@ public class InventoryMode1Fragment extends BaseFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mStorageRef = FirebaseStorage.getInstance().getReference();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         binding = FragmentInventoryMode1Binding.inflate(inflater, container, false);
-
-
         binding.listT22View.setHasFixedSize(true);
         mManager = new LinearLayoutManager(context);
         binding.listT22View.setLayoutManager(mManager);
@@ -297,14 +311,31 @@ public class InventoryMode1Fragment extends BaseFragment {
         binding.btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if (!networkIsConnect()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setMessage("請開啟網路再使用此APP");
+                    builder.setTitle("網路連線發生問題");
+                    builder.setPositiveButton("收到!", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                } else {
+                    submitPost();
+                    submitLocation();
+                    submitTask();
+                    NavHostFragment.findNavController(InventoryMode1Fragment.this)
+                            .navigate(R.id.action_InventoryMode1Fragment_to_InventoryModeFragment);
+                }
             }
         });
-        submitPost();
+
     }
+
     private void submitPost() {
-//        for (HashMap<String, String> onePost:arrayList){
-        HashMap<String, String> onePost = arrayList.get(0);
+        for (HashMap<String, String> onePost : arrayList) {
             final String name = onePost.get("name");
             final String number = onePost.get("number");
             final String time = onePost.get("time");
@@ -314,30 +345,137 @@ public class InventoryMode1Fragment extends BaseFragment {
             final String modeId = onePost.get("modeId");
             final String locationId = onePost.get("locationId");
             final String taskId = onePost.get("taskId");
+            final String uploadFileName1 = onePost.get("uploadImage1");
+            final String uploadFileName2 = onePost.get("uploadImage2");
+            final String uploadFileName3 = onePost.get("uploadImage3");
             if (mUploadTask != null && mUploadTask.isInProgress()) {
                 Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
+                return;
             } else {
                 File path = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                File imgFile1 = new File(path, Objects.requireNonNull(onePost.get("uploadImage1")));
-
-                if (imgFile1.exists()) {
-                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile1.getAbsolutePath());
-                    uploadImage(imgFile1);
+                if (uploadFileName1 != null && !uploadFileName1.isEmpty()) {
+                    File imgFile1 = new File(path, uploadFileName1);
+                    if (imgFile1.exists()) {
+                        uploadImage(imgFile1);
+                    }
                 }
-                File imgFile2 = new File(path, Objects.requireNonNull(onePost.get("uploadImage2")));
-                if (imgFile2.exists()) {
-                    uploadImage(imgFile2);
+                if (uploadFileName2 != null && !uploadFileName2.isEmpty()) {
+                    File imgFile2 = new File(path, uploadFileName2);
+                    if (imgFile2.exists()) {
+                        uploadImage(imgFile2);
 
+                    }
                 }
-                File imgFile3 = new File(path, Objects.requireNonNull(onePost.get("uploadImage3")));
-                if (imgFile3.exists()) {
-                    uploadImage(imgFile3);
+                if (uploadFileName3 != null && !uploadFileName3.isEmpty()) {
+                    File imgFile3 = new File(path, uploadFileName3);
+                    if (imgFile3.exists()) {
+                        uploadImage(imgFile3);
 
+                    }
                 }
             }
-//        }
+//            Toast.makeText(getContext(), "Posting...", Toast.LENGTH_SHORT).show();
+//            final String userId = getUid();
+//            mDatabase.child("users").child(userId).addListenerForSingleValueEvent(
+//                    new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                            // Get user value
+//                            User user = dataSnapshot.getValue(User.class);
+//                            if (user == null) {
+//                                // User is null, error out
+//                                Log.e(TAG, "User " + userId + " is unexpectedly null");
+//                                Toast.makeText(getContext(),
+//                                        "Error: could not fetch user.",
+//                                        Toast.LENGTH_SHORT).show();
+//                            } else {
+//                                // Write new post
+//                                writeNewT22Post(userId, user.username, name, number, time, remark, state, barcode, modeId, locationId, taskId, uploadFileName1, uploadFileName2, uploadFileName3);
+////
+//                            }
+//                        }
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError databaseError) {
+//                            Log.w(TAG, "getUser:onCancelled", databaseError.toException());
+//                        }
+//                    });
+        }
     }
-    private void uploadImage(File imgFile){
+
+    private void writeNewT22Post(String userId, String username, String name, String number, String time, String remarks, String state, String barcode,
+                                 String modeId, String taskId, String locationId, String uploadFileName1, String uploadFileName2, String uploadFileName3) {
+        // Create new post at /user-posts/$userid/$postid and at
+        // /posts/$postid simultaneously
+        String key = mDatabase.child("posts").child(modeId).child(taskId).child(locationId).push().getKey();
+        T22 t22 = new T22(userId, username, name, number, time, remarks, state, barcode, modeId, taskId, locationId, uploadFileName1, uploadFileName2, uploadFileName3);
+        Map<String, Object> postValues = t22.toMap();
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/posts/" + modeId + "/" + taskId + "/" + locationId + "/" + key, postValues);
+        childUpdates.put("/user-posts/" + modeId + "/" + taskId + "/" + locationId + "/" + userId + "/" + key, postValues);
+        mDatabase.updateChildren(childUpdates);
+    }
+
+    private void submitLocation() {
+        String jsonLocationName = getLocationJson();
+        JSONObject jsonLocationData = null;
+        try {
+            jsonLocationData = new JSONObject(readJsonFromPhone(jsonLocationName));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Iterator<String> keys = jsonLocationData.keys();
+        while (keys.hasNext()) {
+            String currentDynamicKey = (String) keys.next();
+            try {
+                if (currentDynamicKey.equals(locationId)) {
+                    JSONObject currentDynamicValue = jsonLocationData.getJSONObject(currentDynamicKey);
+                    String id = (String) currentDynamicValue.get("id");
+                    String name = (String) currentDynamicValue.get("name");
+                    String time = (String) currentDynamicValue.get("time");
+                    writeNewLocation(id, name, time);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void writeNewLocation(String locationId, String name, String time) {
+        Location location = new Location(locationId, name, time);
+        mDatabase.child("locations").child(locationId).setValue(location);
+    }
+
+    private void submitTask() {
+        String jsonTaskName = getTaskJson();
+        JSONObject jsonTaskData = null;
+        try {
+            jsonTaskData = new JSONObject(readJsonFromPhone(jsonTaskName));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Iterator<String> keys = jsonTaskData.keys();
+        while (keys.hasNext()) {
+            String currentDynamicKey = (String) keys.next();
+            try {
+                if (currentDynamicKey.equals(taskId)) {
+                    JSONObject currentDynamicValue = jsonTaskData.getJSONObject(currentDynamicKey);
+                    String id = (String) currentDynamicValue.get("id");
+                    String name = (String) currentDynamicValue.get("name");
+                    String time = (String) currentDynamicValue.get("time");
+                    writeNewTask(id, name, time);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void writeNewTask(String taskId, String name, String time) {
+        Task task = new Task(taskId, name, time);
+        mDatabase.child("tasks").child(taskId).setValue(task);
+    }
+
+    private void uploadImage(File imgFile) {
         Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         myBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
@@ -348,12 +486,13 @@ public class InventoryMode1Fragment extends BaseFragment {
         mUploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getContext(), "image upload failure", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "image upload failure", Toast.LENGTH_SHORT).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Log.e(TAG, "image upload success: ");
+                Toast.makeText(context, imgFile.getName() + "\nimage upload success", Toast.LENGTH_SHORT).show();
+//                Log.e(TAG, "image upload success: ");
             }
         });
 
@@ -491,6 +630,16 @@ public class InventoryMode1Fragment extends BaseFragment {
         }
     }
 
+    private boolean networkIsConnect() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if (networkInfo != null) {
+            return networkInfo.isConnected();
+        } else {
+            return false;
+        }
+    }
+
     private class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder> {
         @NonNull
         @Override
@@ -510,22 +659,30 @@ public class InventoryMode1Fragment extends BaseFragment {
             holder.uploadTime.setText(time);
             holder.remarks.setText(arrayList.get(position).get("remark"));
             File path = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-            File imgFile = new File(path, Objects.requireNonNull(arrayList.get(position).get("uploadImage1")));
-            if (imgFile.exists()) {
-                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                holder.imageItem1.setImageBitmap(myBitmap);
+            String tmpImageFile = arrayList.get(position).get("uploadImage1");
+            if (tmpImageFile != null && !tmpImageFile.isEmpty()) {
+                File imgFile = new File(path, tmpImageFile);
+                if (imgFile.exists()) {
+                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    holder.imageItem1.setImageBitmap(myBitmap);
+                }
             }
-            File imgFile2 = new File(path, Objects.requireNonNull(arrayList.get(position).get("uploadImage2")));
-            if (imgFile2.exists()) {
-                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile2.getAbsolutePath());
-                holder.imageItem2.setImageBitmap(myBitmap);
+            tmpImageFile = arrayList.get(position).get("uploadImage2");
+            if (tmpImageFile != null && !tmpImageFile.isEmpty()) {
+                File imgFile2 = new File(path, tmpImageFile);
+                if (imgFile2.exists()) {
+                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile2.getAbsolutePath());
+                    holder.imageItem2.setImageBitmap(myBitmap);
+                }
             }
-            File imgFile3 = new File(path, Objects.requireNonNull(arrayList.get(position).get("uploadImage3")));
-            if (imgFile3.exists()) {
-                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile3.getAbsolutePath());
-                holder.imageItem3.setImageBitmap(myBitmap);
+            tmpImageFile = arrayList.get(position).get("uploadImage3");
+            if (tmpImageFile != null && !tmpImageFile.isEmpty()) {
+                File imgFile3 = new File(path, tmpImageFile);
+                if (imgFile3.exists()) {
+                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile3.getAbsolutePath());
+                    holder.imageItem3.setImageBitmap(myBitmap);
+                }
             }
-
 
             holder.mView.setOnClickListener((v) -> {
 //                Toast.makeText(context,holder.name.getText(),Toast.LENGTH_SHORT).show();
