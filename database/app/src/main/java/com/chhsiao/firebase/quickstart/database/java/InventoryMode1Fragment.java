@@ -2,6 +2,7 @@ package com.chhsiao.firebase.quickstart.database.java;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,10 +38,9 @@ import android.widget.Toast;
 
 import com.chhsiao.firebase.quickstart.database.java.capture.CaptureAct;
 import com.chhsiao.firebase.quickstart.database.java.models.Location;
-import com.chhsiao.firebase.quickstart.database.java.models.PostV2;
 import com.chhsiao.firebase.quickstart.database.java.models.T22;
-import com.chhsiao.firebase.quickstart.database.java.models.User;
 import com.chhsiao.firebase.quickstart.database.java.models.Task;
+import com.chhsiao.firebase.quickstart.database.java.models.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.io.ByteStreams;
@@ -84,11 +84,8 @@ public class InventoryMode1Fragment extends BaseFragment {
     ScanOptions options = new ScanOptions();
     private static final int PICK_CAMERA_REQUEST = 100;
     private Bitmap mImageBitmap1, mImageBitmap2, mImageBitmap3;
-    String mCameraFileName1, mCameraFileName2, mCameraFileName3;
-    Uri imageUri1, imageUri2, imageUri3;
     private FragmentInventoryMode1Binding binding;
     ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-    private RecyclerView mRecycler;
     LinearLayoutManager mManager;
     private String scannType;
     private String modeId;
@@ -103,7 +100,7 @@ public class InventoryMode1Fragment extends BaseFragment {
     private StorageReference mStorageRef;
     private DatabaseReference mDatabase;
     private StorageTask mUploadTask;
-
+    ProgressDialog progressDialog;
     public InventoryMode1Fragment() {
         // Required empty public constructor
     }
@@ -146,7 +143,8 @@ public class InventoryMode1Fragment extends BaseFragment {
             }
 
         }
-
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage("Uploading Images\nPlease Wait....");
     }
 
     @Override
@@ -348,57 +346,84 @@ public class InventoryMode1Fragment extends BaseFragment {
             final String uploadFileName1 = onePost.get("uploadImage1");
             final String uploadFileName2 = onePost.get("uploadImage2");
             final String uploadFileName3 = onePost.get("uploadImage3");
-            if (mUploadTask != null && mUploadTask.isInProgress()) {
-                Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
-                return;
-            } else {
-                File path = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                if (uploadFileName1 != null && !uploadFileName1.isEmpty()) {
-                    File imgFile1 = new File(path, uploadFileName1);
-                    if (imgFile1.exists()) {
-                        uploadImage(imgFile1);
-                    }
-                }
-                if (uploadFileName2 != null && !uploadFileName2.isEmpty()) {
-                    File imgFile2 = new File(path, uploadFileName2);
-                    if (imgFile2.exists()) {
-                        uploadImage(imgFile2);
 
-                    }
-                }
-                if (uploadFileName3 != null && !uploadFileName3.isEmpty()) {
-                    File imgFile3 = new File(path, uploadFileName3);
-                    if (imgFile3.exists()) {
-                        uploadImage(imgFile3);
+            ArrayList<Uri> imageUris = new ArrayList<>();
+            File path = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            if (uploadFileName1 != null && !uploadFileName1.isEmpty()) {
+                File imgFile1 = new File(path, uploadFileName1);
 
-                    }
+                if (imgFile1.exists()) {
+                    imageUris.add(Uri.fromFile(imgFile1));
+//                        uploadImage(imgFile1);
+
                 }
             }
+            if (uploadFileName2 != null && !uploadFileName2.isEmpty()) {
+                File imgFile2 = new File(path, uploadFileName2);
+                if (imgFile2.exists()) {
+                    imageUris.add(Uri.fromFile(imgFile2));
+//                        uploadImage(imgFile2);
+
+                }
+            }
+            if (uploadFileName3 != null && !uploadFileName3.isEmpty()) {
+                File imgFile3 = new File(path, uploadFileName3);
+                if (imgFile3.exists()) {
+                    imageUris.add(Uri.fromFile(imgFile3));
+//                        uploadImage(imgFile3);
+                }
+            }
+            progressDialog.show();
+            for (int i = 0; i < imageUris.size(); i++){
+                Uri perFile = imageUris.get(i);
+                StorageReference folderReference = mStorageRef.child(modeId +"_" +taskId+"_"+locationId);
+                StorageReference fileReference = folderReference.child(perFile.getLastPathSegment());
+                fileReference.putFile(perFile).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Toast.makeText(context, "上傳圖片成功", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                                imageUris.clear();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(context, "上傳圖片失敗", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                            }
+                        });
+                    }
+                });
+            }
+
 //            Toast.makeText(getContext(), "Posting...", Toast.LENGTH_SHORT).show();
-//            final String userId = getUid();
-//            mDatabase.child("users").child(userId).addListenerForSingleValueEvent(
-//                    new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                            // Get user value
-//                            User user = dataSnapshot.getValue(User.class);
-//                            if (user == null) {
-//                                // User is null, error out
-//                                Log.e(TAG, "User " + userId + " is unexpectedly null");
-//                                Toast.makeText(getContext(),
-//                                        "Error: could not fetch user.",
-//                                        Toast.LENGTH_SHORT).show();
-//                            } else {
-//                                // Write new post
-//                                writeNewT22Post(userId, user.username, name, number, time, remark, state, barcode, modeId, locationId, taskId, uploadFileName1, uploadFileName2, uploadFileName3);
-////
-//                            }
-//                        }
-//                        @Override
-//                        public void onCancelled(@NonNull DatabaseError databaseError) {
-//                            Log.w(TAG, "getUser:onCancelled", databaseError.toException());
-//                        }
-//                    });
+            final String userId = getUid();
+            mDatabase.child("users").child(userId).addListenerForSingleValueEvent(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            // Get user value
+                            User user = dataSnapshot.getValue(User.class);
+                            if (user == null) {
+                                // User is null, error out
+                                Log.e(TAG, "User " + userId + " is unexpectedly null");
+                                Toast.makeText(getContext(),
+                                        "Error: could not fetch user.",
+                                        Toast.LENGTH_SHORT).show();
+                            } else {
+                                // Write new post
+                                writeNewT22Post(userId, user.username, name, number, time, remark, state, barcode, modeId, locationId, taskId, uploadFileName1, uploadFileName2, uploadFileName3);
+//
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.w(TAG, "getUser:onCancelled", databaseError.toException());
+                        }
+                    });
         }
     }
 
@@ -411,7 +436,7 @@ public class InventoryMode1Fragment extends BaseFragment {
         Map<String, Object> postValues = t22.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/posts/" + modeId + "/" + taskId + "/" + locationId + "/" + key, postValues);
-        childUpdates.put("/user-posts/" + modeId + "/" + taskId + "/" + locationId + "/" + userId + "/" + key, postValues);
+        childUpdates.put("/user-posts/" +userId+"/"+ modeId + "/" + taskId + "/" + locationId  + "/" + key, postValues);
         mDatabase.updateChildren(childUpdates);
     }
 
@@ -475,28 +500,7 @@ public class InventoryMode1Fragment extends BaseFragment {
         mDatabase.child("tasks").child(taskId).setValue(task);
     }
 
-    private void uploadImage(File imgFile) {
-        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        myBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        byte[] imageByte = baos.toByteArray();
-        StorageReference fileReference = mStorageRef.child(imgFile.getName());
-        mUploadTask = fileReference.putBytes(imageByte);
-        // Register observers to listen for when the download is done or if it fails
-        mUploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(context, "image upload failure", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(context, imgFile.getName() + "\nimage upload success", Toast.LENGTH_SHORT).show();
-//                Log.e(TAG, "image upload success: ");
-            }
-        });
 
-    }
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
             result -> {
