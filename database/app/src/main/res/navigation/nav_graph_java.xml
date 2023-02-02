@@ -166,6 +166,11 @@
             app:popUpTo="@id/InventoryMode1Fragment"
             app:destination="@id/InventoryMode1Fragment">
         </action>
+        <action
+            android:id="@+id/action_InventoryLocationFragment_to_InventoryMode2Fragment"
+            app:popUpTo="@id/InventoryMode2Fragment"
+            app:destination="@id/InventoryMode2Fragment">
+        </action>
 
     </fragment>
 
@@ -176,6 +181,18 @@
         tools:layout="@layout/fragment_inventory_mode1">
         <action
             android:id="@+id/action_InventoryMode1Fragment_to_InventoryModeFragment"
+            app:destination="@id/InventoryModeFragment"
+            app:popUpTo="@id/InventoryModeFragment">
+        </action>
+
+    </fragment>
+    <fragment
+        android:id="@+id/InventoryMode2Fragment"
+        android:name="com.chhsiao.firebase.quickstart.database.java.InventoryMode2Fragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_inventory_mode2">
+        <action
+            android:id="@+id/action_InventoryMode2Fragment_to_InventoryModeFragment"
             app:destination="@id/InventoryModeFragment"
             app:popUpTo="@id/InventoryModeFragment">
         </action>
@@ -236,13 +253,7 @@
             app:popUpTo="@id/InventoryFragment">
             <argument android:name="location" app:nullable="false" app:argType="string" android:defaultValue=""/>
         </action>
-        <action
-            android:id="@+id/action_HomeT22Fragment_to_MainFragment"
-            app:destination="@id/MainFragment"
-            app:popUpTo="@id/MainFragment">
-            <argument android:name="hideFAB" app:nullable="false" app:argType="boolean" android:defaultValue="false"/>
-            <argument android:name="location" app:nullable="false" app:argType="string" android:defaultValue=""/>
-        </action>
+
     </fragment>
 
     <fragment

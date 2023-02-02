@@ -159,7 +159,6 @@ public class InventoryMode1Fragment extends BaseFragment {
         binding.listT22View.setLayoutManager(mManager);
         myListAdapter = new MyListAdapter();
         binding.listT22View.setAdapter(myListAdapter);
-
         return binding.getRoot();
     }
 

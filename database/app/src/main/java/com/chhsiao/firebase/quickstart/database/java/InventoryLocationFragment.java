@@ -30,6 +30,7 @@ import com.google.common.io.ByteStreams;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -60,8 +61,9 @@ public class InventoryLocationFragment extends BaseFragment {
     private String mode;
     private String taskId;
     public static String locationId;
-    ArrayList<HashMap<String,String>> arrayList = new ArrayList<>();
+    ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
     String json_name;
+
     public InventoryLocationFragment() {
         // Required empty public constructor
     }
@@ -74,11 +76,11 @@ public class InventoryLocationFragment extends BaseFragment {
         json_name = getLocationJson();
         checkJsonFile(json_name);
         Iterator<String> keys = jsonData.keys();
-        while(keys.hasNext()) {
-            String currentDynamicKey = (String)keys.next();
+        while (keys.hasNext()) {
+            String currentDynamicKey = (String) keys.next();
             try {
                 JSONObject currentDynamicValue = jsonData.getJSONObject(currentDynamicKey);
-                HashMap<String,String> hashMap = new HashMap<>();
+                HashMap<String, String> hashMap = new HashMap<>();
                 hashMap.put("id", (String) currentDynamicValue.get("id"));
                 hashMap.put("name", (String) currentDynamicValue.get("name"));
                 hashMap.put("time", (String) currentDynamicValue.get("time"));
@@ -106,14 +108,15 @@ public class InventoryLocationFragment extends BaseFragment {
         binding.recyclerviewLocation.setAdapter(myListAdapter);
         return binding.getRoot();
     }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         binding.btnNewLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context,R.style.BottomSheetDialog);
-                View view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_location,null);
+                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context, R.style.BottomSheetDialog);
+                View view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_location, null);
                 TextInputLayout textID = view.findViewById(R.id.textInputLayoutID);
                 TextInputLayout textName = view.findViewById(R.id.textInputLayoutName);
                 TextInputLayout textTime = view.findViewById(R.id.textInputLayoutTime);
@@ -123,8 +126,8 @@ public class InventoryLocationFragment extends BaseFragment {
                 parent.setBackgroundResource(android.R.color.transparent);//將背景設為透明，否則預設白底
                 bottomSheetDialog.show();
                 textTime.setEnabled(false);
-                Date dNow = new Date( );
-                SimpleDateFormat ft = new SimpleDateFormat ("yyyy/MM/dd HH:mm");
+                Date dNow = new Date();
+                SimpleDateFormat ft = new SimpleDateFormat("yyyy/MM/dd HH:mm");
                 textTime.getEditText().setText(ft.format(dNow).toString());
                 btnOK.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -141,20 +144,19 @@ public class InventoryLocationFragment extends BaseFragment {
                         }
                         if (TextUtils.isEmpty(strTime)) {
                             textTime.setError(REQUIRED);
-                        }
-                        else{
-                            HashMap<String,String> hashMap = new HashMap<>();
-                            hashMap.put("id",strID);
-                            hashMap.put("time",strTime);
-                            hashMap.put("name",strName);
+                        } else {
+                            HashMap<String, String> hashMap = new HashMap<>();
+                            hashMap.put("id", strID);
+                            hashMap.put("time", strTime);
+                            hashMap.put("name", strName);
                             arrayList.add(hashMap);
                             JSONObject jsonObjectNewLocation = new JSONObject(hashMap);
                             try {
-                                jsonData.put(strID,jsonObjectNewLocation);
+                                jsonData.put(strID, jsonObjectNewLocation);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            saveJson2File(json_name,jsonData);
+                            saveJson2File(json_name, jsonData);
                             bottomSheetDialog.dismiss();
                             myListAdapter.notifyDataSetChanged();
 
@@ -164,13 +166,14 @@ public class InventoryLocationFragment extends BaseFragment {
             }
         });
         binding.refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
-        binding.refreshLayout.setOnRefreshListener(()->{
+        binding.refreshLayout.setOnRefreshListener(() -> {
             myListAdapter.notifyDataSetChanged();
             binding.refreshLayout.setRefreshing(false);
 
         });
     }
-    private void checkJsonFile(String target_name){//1.建立json檔(如果json檔不存在)
+
+    private void checkJsonFile(String target_name) {//1.建立json檔(如果json檔不存在)
         int READ_EXTERNAL_STORAGE = 100;
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE);
@@ -185,6 +188,7 @@ public class InventoryLocationFragment extends BaseFragment {
             }
         }
     }
+
     public String readJsonFromPhone(String filename) {
         File path = getActivity().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
         File file = new File(path, filename);
@@ -197,6 +201,7 @@ public class InventoryLocationFragment extends BaseFragment {
         }
         return line;
     }
+
     boolean hasExternalStoragePrivateJson(String filename) {
         // Create a path where we will place our picture in the user's
         // public pictures directory and check if the file exists.  If
@@ -209,6 +214,7 @@ public class InventoryLocationFragment extends BaseFragment {
         }
         return false;
     }
+
     void createExternalStoragePrivateJson(String filename) {
         File path = getActivity().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
         AssetManager assetManager = context.getAssets();
@@ -224,6 +230,7 @@ public class InventoryLocationFragment extends BaseFragment {
         } catch (IOException ignored) {
         }
     }
+
     public void saveJson2File(String filename, @NonNull JSONObject JsonObject) {
         String userString = JsonObject.toString();
         File path = getActivity().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
@@ -239,10 +246,12 @@ public class InventoryLocationFragment extends BaseFragment {
             e.printStackTrace();
         }
     }
-    private class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder>{
-        class ViewHolder extends RecyclerView.ViewHolder{
-            private TextView id,name,time;
+
+    private class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder> {
+        class ViewHolder extends RecyclerView.ViewHolder {
+            private TextView id, name, time;
             private View mView;
+
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 id = itemView.findViewById(R.id.locationID);
@@ -251,10 +260,11 @@ public class InventoryLocationFragment extends BaseFragment {
                 mView = itemView;
             }
         }
+
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_location,parent,false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_location, parent, false);
             return new ViewHolder(view);
         }
 
@@ -263,15 +273,20 @@ public class InventoryLocationFragment extends BaseFragment {
             holder.id.setText(arrayList.get(position).get("id"));
             holder.name.setText(arrayList.get(position).get("name"));
             holder.time.setText(arrayList.get(position).get("time"));
-            holder.mView.setOnClickListener((v)->{
+            holder.mView.setOnClickListener((v) -> {
 //                Toast.makeText(context,holder.name.getText(),Toast.LENGTH_SHORT).show();
                 locationId = holder.id.getText().toString();
 //                Toast.makeText(context,"mode:"+mode+"\n"+"taskID:"+taskId+"\n",Toast.LENGTH_SHORT).show();
                 Bundle args = new Bundle();
-                String name =holder.name.getText().toString();
-                args.putString("name",name);
-                NavHostFragment.findNavController(InventoryLocationFragment.this)
-                        .navigate(R.id.action_InventoryLocationFragment_to_InventoryMode1Fragment,args);
+                String name = holder.name.getText().toString();
+                args.putString("name", name);
+                if (mode.equals("AABB")) {
+                    NavHostFragment.findNavController(InventoryLocationFragment.this)
+                            .navigate(R.id.action_InventoryLocationFragment_to_InventoryMode1Fragment, args);
+                }else if (mode.equals("A1B1")) {
+                    NavHostFragment.findNavController(InventoryLocationFragment.this)
+                            .navigate(R.id.action_InventoryLocationFragment_to_InventoryMode2Fragment, args);
+                }
 
             });
         }
